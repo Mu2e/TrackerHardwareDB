@@ -69,7 +69,7 @@ if (df.duplicated('ch').any()):
 update_sql_file = open(outfilename, 'w')
 update_sql_file.write("UPDATE qc.panels SET max_erf_fit=\'{" + df.sort_values('ch')['max_erf_fit'].to_string(index=False).replace("\n", ",") + "}\' where id=" + str(panel_id) + ";\n");
 update_sql_file.write("UPDATE qc.panels SET rise_time=\'{" + df.sort_values('ch')['rise_time'].to_string(index=False).replace("\n", ",") + "}\' where id=" + str(panel_id) + ";\n");
-update_sql_file.write("UPDATE qc.panels SET hv_data_filenames=\'{"
+update_sql_file.write("UPDATE qc.panels SET maxerf_risetime_filenames=\'{"
                       + ' '.join([csvfile+"," for csvfile in nodir_csvfiles[:-1]]) # all but the last filenames should be comma-separated
                       + ' '.join([csvfile for csvfile in nodir_csvfiles[-1:]])
                       + "}\' where id=" + str(panel_id) + ";\n");

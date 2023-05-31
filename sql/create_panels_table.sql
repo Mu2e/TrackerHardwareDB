@@ -24,3 +24,5 @@ create table qc.panels (
 
 grant select on qc.panels to public;
 grant insert on qc.panels to mu2e_tracker_admin;
+grant insert on qc.panels to mu2e_tracker_writer;
+grant update on qc.panels to mu2e_tracker_writer;
