@@ -96,29 +96,35 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
 
     // total = missing_straws.length + high_current_wires.length + blocked_straws.length + sparking_wires.length;
     var output = " has "+total_issues+" issues: \n"
+    var first = true;
     for (let i = 0; i < data.length-2; i++) {
 	var the_issue = "";
 	if (i < single_ch_issues.length) {
-	    if (i == 0) {
-	    	output += "\t ";
-	    }
 	    the_issue = single_ch_issues[i];
 	}
 	var this_panel_issue = this_panel_issues[the_issue];
-	output += this_panel_issue.length + " " + the_issue;
-	
-	if (i != data.length-1) { output += ", "; }
+	if (this_panel_issue.length > 0) {
+	    if (first == true) {
+	    	output += "\t ";
+		first = false;
+	    }
+	    else {
+		output += ", ";
+	    }
+	    output += this_panel_issue.length + " " + the_issue;
+	}
+//	if (i != data.length-1) { output += ", "; }
     }
 
     output += "\n\t HV data: ";
-    var hv_data_filenames = this_panel_issues["hv_data_filenames"];
-    if (hv_data_filenames.length == 0) {
+    var maxerf_risetime_filenames = this_panel_issues["maxerf_risetime_filenames"];
+    if (maxerf_risetime_filenames.length == 0) {
 	output += "none";
     }
     else {
-	for (let i_filename = 0; i_filename < hv_data_filenames.length; ++i_filename) {
-	    output += hv_data_filenames[i_filename];
-	    if (i_filename < hv_data_filenames.length-1) {
+	for (let i_filename = 0; i_filename < maxerf_risetime_filenames.length; ++i_filename) {
+	    output += maxerf_risetime_filenames[i_filename];
+	    if (i_filename < maxerf_risetime_filenames.length-1) {
 		output += ", ";
 	    }
 	}
