@@ -10,10 +10,15 @@ showEarBoardButton.addEventListener('click', async function () {
 	var img_earboard = document.getElementById('img_earboard');
 	img_earboard.src =  "images/earboard/plot_" + panel_number.toString().padStart(3,'0') + ".pdf";
 
+
 	const response = await fetch('getEarBoard/'+panel_number);
 	const panel_info = await response.json();
-
-	document.getElementById("earboard_result").innerHTML = panel_info[0]["earboard"];
+	if (panel_info.length > 0) {
+	    document.getElementById("earboard_result").innerHTML = panel_info[0]["earboard"];
+	}
+	else {
+	    document.getElementById("earboard_result").innerHTML = "Panel " + panel_number.toString() + " not found in qc.panels";
+	}
 	//img_earboard.onerror = smooth_data;
 	//img_earboard.onload = function() { document.getElementById("smooth_filename").innerHTML = img_earboard.src; }
 	//smooth_data();
