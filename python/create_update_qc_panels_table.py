@@ -17,6 +17,7 @@ for column in all_columns:
     parser.add_argument('--new_'+column, nargs='*', help='Reset the '+column+' column to these straw numbers')
     parser.add_argument('--add_'+column, nargs='*', help='Add these straw numbers to the '+column+' column')
     parser.add_argument('--remove_'+column, nargs='*', help='Remove these straw numbers from the '+column+' column')
+parser.add_argument('--earboard', help='True / false whether panel passed ear board test')
 
 args = parser.parse_args()
 dict_args = vars(args) # convert to dictionary
@@ -53,6 +54,9 @@ for column in all_columns:
         # Have to remove elements one at a time in psql
         for rem in dict_args['remove_'+column]:
             update_sql_file.write("UPDATE qc.panels SET "+column+"=ARRAY_REMOVE("+column+", "+rem+") where id=" + str(panel_id) + ";\n");
+
+if (dict_args['earboard'] != None):
+    update_sql_file.write("UPDATE qc.panels SET earboard=" + dict_args['earboard'] + " where id=" + str(panel_id) + ";\n");
 
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")
