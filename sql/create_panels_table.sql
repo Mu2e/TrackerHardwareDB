@@ -20,6 +20,7 @@ create table qc.panels (
 	rise_time real[] DEFAULT '{}',
 	missing_wires integer[] DEFAULT '{}',
 	maxerf_risetime_filenames text[] DEFAULT '{}',
+	earboard BOOLEAN,
 );
 
 grant select on qc.panels to public;

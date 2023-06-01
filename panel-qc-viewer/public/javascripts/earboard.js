@@ -13,7 +13,7 @@ showEarBoardButton.addEventListener('click', async function () {
 	const response = await fetch('getEarBoard/'+panel_number);
 	const panel_info = await response.json();
 
-	document.getElementById("earboard_result").innerHTML = "pass/fail";
+	document.getElementById("earboard_result").innerHTML = panel_info[0]["earboard"];
 	//img_earboard.onerror = smooth_data;
 	//img_earboard.onload = function() { document.getElementById("smooth_filename").innerHTML = img_earboard.src; }
 	//smooth_data();

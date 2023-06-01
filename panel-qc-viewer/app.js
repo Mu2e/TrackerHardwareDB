@@ -42,6 +42,7 @@ app.use('/getPanelFromFNALPlanesDB', require('./db/getPanelFromFNALPlanesDB'));
 app.use('/getImportDateOfFNALPlanesDB', require('./db/getImportDateOfFNALPlanesDB'));
 app.use('/fnal_plane_db', require('./routes/fnal_plane_db'));
 
+app.use('/getEarBoard', require('./db/getEarBoard'));
 app.use('/earboard', require('./routes/earboard'));
 
 // catch 404 and forward to error handler
