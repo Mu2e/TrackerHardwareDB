@@ -77,7 +77,9 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
 		       side: 'right',
 		       titlefont: {color: 'red'},
 		       tickfont: {color: 'red'},
-		       showgrid : false
+		       zerolinecolor : 'red',
+		       showgrid : false,
+		       range : [-0.2, 1.2]
 		   },
 		   yaxis3: {
 		       title: 'Rise Time [min]',
@@ -86,7 +88,9 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
 		       position : 0.95,
 		       titlefont: {color: 'blue'},
 		       tickfont: {color: 'blue'},
-		       showgrid : false
+		       showgrid : false,
+		       zerolinecolor : 'blue',
+		       range : [0, 60]
 		   },
 		   barmode : 'stack',
 		   legend: {"orientation": "h"},
@@ -129,5 +133,8 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
 	    }
 	}
     }
+
+    output += "\n\t Passed earboard test? ";
+    output += this_panel_issues["earboard"];
     return output;
 }
