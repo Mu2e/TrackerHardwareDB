@@ -133,5 +133,8 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
 	    }
 	}
     }
+
+    output += "\n\t Passed earboard test? ";
+    output += this_panel_issues["earboard"];
     return output;
 }

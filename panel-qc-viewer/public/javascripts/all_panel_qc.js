@@ -12,11 +12,19 @@ var single_channel_n_data = Array(single_ch_issues.length)
 var panels = Array(allPanelInfo.length)
 var panel_num_map = new Map();
 var hv_exists = Array(allPanelInfo.length).fill(0)
+var passed_earboard_test = Array(allPanelInfo.length).fill(0)
 for (let i_panel = 0; i_panel < panels.length; i_panel++) {
     panels[i_panel] = allPanelInfo[i_panel]['id'];
     panel_num_map.set(allPanelInfo[i_panel]['id'], i_panel);
     if (allPanelInfo[i_panel]['max_erf_fit'].length != 0) {
 	hv_exists[i_panel] = 1;
+    }
+    if (allPanelInfo[i_panel]["earboard"] == true) {
+	console.log(allPanelInfo[i_panel]['earboard'])
+	passed_earboard_test[i_panel] = 1;
+    }
+    else {
+	passed_earboard_test[i_panel] = 0;
     }
 }
 for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
@@ -53,17 +61,23 @@ var hv_data_exists = {name : "hv_data_exists",
 		      mode:"markers",
 		      type:"scatter"
 		     }
+var earboard_test = {name : "earboard_test",
+		     x: panels,
+		     y: passed_earboard_test,
+		     mode:"markers",
+		     type:"scatter"
+		    }
 var xaxis = {title : {text : 'panel number'}, tickmode : "linear", tick0 : 0.0, dtick : 10.0, gridwidth : 2};
 var yaxis = {title : {text : ''}, 
 	     tickmode: "array",
 	     tickvals: [0, 1],
 	     ticktext: ['no', 'yes']
 	    };
-var layout = { title : {text: "HV Data Exists?"},
+var layout = { title : {text: "Yes / No Questions"},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
 	       scroolZoom : true };
-Plotly.newPlot(hv_data_vs_panel_plot, [ hv_data_exists ], layout);
+Plotly.newPlot(hv_data_vs_panel_plot, [ hv_data_exists, earboard_test ], layout);
 
 
 const plane_response = await fetch('allPlanes');
