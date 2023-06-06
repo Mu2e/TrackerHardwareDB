@@ -45,18 +45,18 @@ print("Creating " + outfilename + " for panel number " + str(panel_id) + "...");
 update_sql_file = open(outfilename, 'w')
 for column in all_columns:
     if (dict_args['new_'+column] != None):
-        update_sql_file.write("UPDATE qc.panels SET "+column+"=\'{" + ', '.join(dict_args['new_'+column]) + "}\' where id=" + str(panel_id) + ";\n");
+        update_sql_file.write("UPDATE qc.panels SET "+column+"=\'{" + ', '.join(dict_args['new_'+column]) + "}\' where panel_id=" + str(panel_id) + ";\n");
 
     if (dict_args['add_'+column] != None):
-        update_sql_file.write("UPDATE qc.panels SET "+column+"=ARRAY_CAT("+column+", \'{" + ', '.join(dict_args['add_'+column]) + "}\' where id=" + str(panel_id) + ";\n");
+        update_sql_file.write("UPDATE qc.panels SET "+column+"=ARRAY_CAT("+column+", \'{" + ', '.join(dict_args['add_'+column]) + "}\' where panel_id=" + str(panel_id) + ";\n");
 
     if (dict_args['remove_'+column] != None):
         # Have to remove elements one at a time in psql
         for rem in dict_args['remove_'+column]:
-            update_sql_file.write("UPDATE qc.panels SET "+column+"=ARRAY_REMOVE("+column+", "+rem+") where id=" + str(panel_id) + ";\n");
+            update_sql_file.write("UPDATE qc.panels SET "+column+"=ARRAY_REMOVE("+column+", "+rem+") where panel_id=" + str(panel_id) + ";\n");
 
 if (dict_args['earboard'] != None):
-    update_sql_file.write("UPDATE qc.panels SET earboard=" + dict_args['earboard'] + " where id=" + str(panel_id) + ";\n");
+    update_sql_file.write("UPDATE qc.panels SET earboard=" + dict_args['earboard'] + " where panel_id=" + str(panel_id) + ";\n");
 
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")

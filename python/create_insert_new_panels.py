@@ -21,7 +21,7 @@ print("Creating " + outfilename + " for panel ids [" + ', '.join(panel_ids) + "]
 
 insert_sql_file = open(outfilename, 'w')
 for panel_id in panel_ids:
-    insert_sql_file.write("INSERT INTO qc.panels(id) VALUES(" + str(panel_id) + ");\n");
+    insert_sql_file.write("INSERT INTO qc.panels(panel_id) VALUES(" + str(panel_id) + ");\n");
 
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")
