@@ -16,7 +16,7 @@ cols_to_extract = {'Missing_straws': 'missing_straws',
                    'Loose_omegas' : 'loose_omega_pieces',
                    'Missing_anode_pins' : 'missing_anode',
                    'Missing_cathode_pins' : 'missing_cathode',
-                   'Missing_omegas' : 'missing_omegas',
+                   'Missing_omegas' : 'missing_omega_pieces',
                    'Plane_number' : 'tbd'}
 
 min_panel_id=1
