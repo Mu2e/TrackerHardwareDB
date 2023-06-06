@@ -16,7 +16,8 @@ cols_to_extract = {'Missing_straws': 'missing_straws',
                    'Loose_omegas' : 'loose_omega_pieces',
                    'Missing_anode_pins' : 'missing_anode',
                    'Missing_cathode_pins' : 'missing_cathode',
-                   'Missing_omegas' : 'missing_omegas'}
+                   'Missing_omegas' : 'missing_omegas',
+                   'Plane_number' : 'tbd'}
 
 min_panel_id=1
 max_panel_id=300
@@ -44,8 +45,11 @@ for panel_id in np.linspace(min_panel_id, max_panel_id, num=max_panel_id,dtype=i
         print("\n")
 
         # Updates for qc.panels
-        command = "python3 create_update_qc_panels_table.py --panel_id "+str(panel_id);
-        commands_added = False
+        panel_command = "python3 create_update_qc_panels_table.py --panel_id "+str(panel_id);
+        panel_commands_added = False
+
+        base_plane_command = "python3 create_update_qc_planes_table.py "
+        plane_commands_added = False
         for col in cols_to_extract:
             if (len(joined_df.loc[(joined_df['file_name']==col)])>0):
                 old_vals = replace_problem_chars(str(joined_df.loc[(joined_df['file_name'] == col)][['file_contents_previous']].values))
@@ -59,7 +63,7 @@ for panel_id in np.linspace(min_panel_id, max_panel_id, num=max_panel_id,dtype=i
                 # go through both old and new vals and check that we get integers for all of these
                 for val_str_array, val_int_array in zip([old_vals_str_array, new_vals_str_array], [old_vals_int_array, new_vals_int_array]):
                     for str_val in val_str_array:
-                        if str_val == "":
+                        if str_val == "" or str_val=="removed" or str_val=="none": # "removed" and "none" are used for plane numbers 
                             continue
 
                         try:
@@ -70,6 +74,8 @@ for panel_id in np.linspace(min_panel_id, max_panel_id, num=max_panel_id,dtype=i
                             user_vals = input("Please input the correct values for \""+str_val+"\" (comma separated): ").split(',')
 #                            print(user_vals)
                             for user_val in user_vals:
+                                if user_val == "":
+                                    continue
                                 try:
                                     val_int_array.append(int(user_val))
                                 except ValueError:
@@ -90,15 +96,28 @@ for panel_id in np.linspace(min_panel_id, max_panel_id, num=max_panel_id,dtype=i
                     if new_val not in old_vals_int_array:
                         vals_to_add.append(str(new_val))
 
-                if (len(vals_to_remove)>0):
-                    commands_added=True
-                    command = command +" --remove_" + cols_to_extract[col] + " "+' '.join(vals_to_remove)
+                if (col != 'Plane_number'):
+                    if (len(vals_to_remove)>0):
+                        panel_commands_added=True
+                        panel_command = panel_command +" --remove_" + cols_to_extract[col] + " "+' '.join(vals_to_remove)
 
-                if (len(vals_to_add)>0):
-                    commands_added=True
-                    command = command +" --add_" + cols_to_extract[col] + " "+' '.join(vals_to_add)
+                    if (len(vals_to_add)>0):
+                        panel_commands_added=True
+                        panel_command = panel_command +" --add_" + cols_to_extract[col] + " "+' '.join(vals_to_add)
+                else:
+                    if (len(vals_to_remove)>0):
+                        plane_command = base_plane_command +" --plane_id "+' '.join(vals_to_remove) + " --remove_panels " + str(panel_id)
+                        plane_commands_added=True
+                        create_sh_file.write(plane_command+"\n")
 
-        if commands_added:
-            create_sh_file.write(command+"\n")
+                    if (len(vals_to_add)>0):
+                        plane_command = base_plane_command +" --plane_id "+' '.join(vals_to_add) + " --add_panels " + str(panel_id)
+                        plane_commands_added=True
+                        create_sh_file.write(plane_command+"\n")
+
+        if panel_commands_added:
+            create_sh_file.write(panel_command+"\n")
+        elif plane_commands_added:
+            print("Panel ID "+str(panel_id)+": changed planes")
         else:
             print("Panel ID "+str(panel_id)+": nothing to change in DB")
