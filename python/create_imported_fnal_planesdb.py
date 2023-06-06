@@ -12,7 +12,7 @@ if (len(os.sys.argv) != 2):
     usage()
 elif (os.sys.argv[1] == "-h" or os.sys.argv[1] == "--help"):
     usage()
-    
+
 basedir=os.sys.argv[1]
 if (not os.path.exists(basedir)):
     print("Directory \"" + basedir + "\" does not exist");
@@ -32,6 +32,8 @@ with os.scandir(basedir) as plane_dirs:
                         continue
                     if (panel_dir.is_dir()):
                         print(plane_dir.name+"/"+panel_dir.name)
+                        if ('094' in panel_dir.name): # this is a duplicate
+                            continue
                         with os.scandir(basedir+"/"+plane_dir.name+"/"+panel_dir.name) as panel_files:
                             for panel_file in panel_files:
                                 if ('._' in panel_file.name):
@@ -52,12 +54,15 @@ with os.scandir(basedir) as plane_dirs:
 
 create_sql_file = open('../sql/create_imported_fnal_planesdb.sql', 'w')
 create_sql_file.write("set role mu2e_tracker_admin;\n")
-create_sql_file.write("create schema imported;\n")
-create_sql_file.write("grant usage on schema imported to public;\n")
+#create_sql_file.write("create schema imported;\n")
+#create_sql_file.write("grant usage on schema imported to public;\n")
+create_sql_file.write("CREATE TABLE imported.fnal_planes_previous AS SELECT * FROM imported.fnal_planes;\n"); # create backup of previous version
+create_sql_file.write("DROP TABLE imported.fnal_planes;\n");
 create_sql_file.write("CREATE TABLE imported.fnal_planes(id integer primary key, panel_id integer, file_name text, file_contents text, last_modified timestamp);\n")
 
 create_sql_file.write("grant select on imported.fnal_planes to public;\n");
 create_sql_file.write("grant insert on imported.fnal_planes to mu2e_tracker_admin;\n");
+create_sql_file.write("grant select on imported.fnal_planes_previous to public;\n");
 
 counter=0
 insert_sql_file = open('../sql/insert_imported_fnal_planesdb.sql', 'w')
