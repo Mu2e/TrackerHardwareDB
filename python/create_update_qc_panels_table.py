@@ -39,7 +39,7 @@ for column in all_columns:
 #print(args.add_missing_straws)
 #print(args.remove_missing_straws)
 
-outfilename = '../sql/update_qc_panels_table.sql';
+outfilename = '../sql/update_qc_panels_table_'+str(panel_id)+'.sql';
 print("Creating " + outfilename + " for panel number " + str(panel_id) + "...");
 
 update_sql_file = open(outfilename, 'w')
