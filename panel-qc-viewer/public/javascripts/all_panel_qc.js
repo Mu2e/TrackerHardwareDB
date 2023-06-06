@@ -23,8 +23,11 @@ for (let i_panel = 0; i_panel < panels.length; i_panel++) {
 	console.log(allPanelInfo[i_panel]['earboard'])
 	passed_earboard_test[i_panel] = 1;
     }
-    else {
+    else if (allPanelInfo[i_panel]["earboard"] == false) {
 	passed_earboard_test[i_panel] = 0;
+    }
+    else {
+	passed_earboard_test[i_panel] = -0.2;
     }
 }
 for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
@@ -55,13 +58,13 @@ var layout = { title : {text: "All Single-Channel Issues vs Panel Number"},
 Plotly.newPlot(single_channel_issue_vs_panel_plot, single_channel_n_data, layout);
 
 var hv_data_vs_panel_plot = document.getElementById('hv_data_vs_panel_plot');
-var hv_data_exists = {name : "hv_data_exists",
+var hv_data_exists = {name : "HV Data Exists?",
 		      x: panels,
 		      y: hv_exists,
 		      mode:"markers",
 		      type:"scatter"
 		     }
-var earboard_test = {name : "earboard_test",
+var earboard_test = {name : "Passed Earboard Test?",
 		     x: panels,
 		     y: passed_earboard_test,
 		     mode:"markers",
@@ -70,10 +73,10 @@ var earboard_test = {name : "earboard_test",
 var xaxis = {title : {text : 'panel number'}, tickmode : "linear", tick0 : 0.0, dtick : 10.0, gridwidth : 2};
 var yaxis = {title : {text : ''}, 
 	     tickmode: "array",
-	     tickvals: [0, 1],
-	     ticktext: ['no', 'yes']
+	     tickvals: [0, 1, -0.2],
+	     ticktext: ['no', 'yes', 'unknown']
 	    };
-var layout = { title : {text: "Yes / No Questions"},
+var layout = { title : {text: "Yes / No / Unknown Questions"},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
 	       scroolZoom : true };
