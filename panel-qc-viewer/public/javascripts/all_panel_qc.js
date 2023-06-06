@@ -90,8 +90,8 @@ var planes = Array(allPlaneInfo.length)
 var hv_exists_plane = Array(allPlaneInfo.length).fill(0)
 
 for (let i_plane = 0; i_plane < planes.length; i_plane++) {
-    planes[i_plane] = allPlaneInfo[i_plane]['plane'];
-    let panels = allPlaneInfo[i_plane]['panels']
+    planes[i_plane] = allPlaneInfo[i_plane]['plane_id'];
+    let panels = allPlaneInfo[i_plane]['panel_ids']
     for (let i_panel = 0; i_panel < panels.length; ++i_panel){
 	let panel_number = panels[i_panel];
 	const panel_info = allPanelInfo[panel_num_map.get(panel_number)];
