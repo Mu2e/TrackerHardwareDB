@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 
 router
     .get('/', async(req, res, next) =>{
-    const response = await fetch('https://dbdata0vm.fnal.gov:8444/QE/mu2e/prod/app/SQ/query?dbname=mu2e_tracker_prd&t=qc.planes&o=plane&f=text');
+    const response = await fetch('https://dbdata0vm.fnal.gov:9443/QE/mu2e/prod/app/SQ/query?dbname=mu2e_tracker_prd&t=qc.planes&o=plane_id&f=text');
     const allPlaneInfo = await response.text();
 //	console.log(allPlaneInfo);
     return res.send(allPlaneInfo);
