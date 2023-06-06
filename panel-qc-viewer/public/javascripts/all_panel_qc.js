@@ -14,8 +14,8 @@ var panel_num_map = new Map();
 var hv_exists = Array(allPanelInfo.length).fill(0)
 var passed_earboard_test = Array(allPanelInfo.length).fill(0)
 for (let i_panel = 0; i_panel < panels.length; i_panel++) {
-    panels[i_panel] = allPanelInfo[i_panel]['id'];
-    panel_num_map.set(allPanelInfo[i_panel]['id'], i_panel);
+    panels[i_panel] = allPanelInfo[i_panel]['panel_id'];
+    panel_num_map.set(allPanelInfo[i_panel]['panel_id'], i_panel);
     if (allPanelInfo[i_panel]['max_erf_fit'].length != 0) {
 	hv_exists[i_panel] = 1;
     }

@@ -5,7 +5,7 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
     const single_ch_issues = single_channel_issues(); // the rest to be added
 
     var this_panel_issues = panel_info[0]
-    var this_title = "Panel "+this_panel_issues["id"];
+    var this_title = "Panel "+this_panel_issues["panel_id"];
 
     var all_wires = Array(96).fill(0)
     var wire_numbers = Array(96).fill(0)
