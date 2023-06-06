@@ -20,7 +20,7 @@ dict_args = vars(args) # convert to dictionary
 plane_id=args.plane_id
 
 
-outfilename = '../sql/update_qc_planes_table.sql';
+outfilename = '../sql/update_qc_planes_table_'+str(plane_id)+'.sql';
 print("Creating " + outfilename + " for plane number " + str(plane_id) + "...");
 
 update_sql_file = open(outfilename, 'w')
