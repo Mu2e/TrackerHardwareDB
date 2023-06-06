@@ -48,7 +48,7 @@ for column in all_columns:
         update_sql_file.write("UPDATE qc.panels SET "+column+"=\'{" + ', '.join(dict_args['new_'+column]) + "}\' where panel_id=" + str(panel_id) + ";\n");
 
     if (dict_args['add_'+column] != None):
-        update_sql_file.write("UPDATE qc.panels SET "+column+"=ARRAY_CAT("+column+", \'{" + ', '.join(dict_args['add_'+column]) + "}\' where panel_id=" + str(panel_id) + ";\n");
+        update_sql_file.write("UPDATE qc.panels SET "+column+"=ARRAY_CAT("+column+", \'{" + ', '.join(dict_args['add_'+column]) + "}\') where panel_id=" + str(panel_id) + ";\n");
 
     if (dict_args['remove_'+column] != None):
         # Have to remove elements one at a time in psql
