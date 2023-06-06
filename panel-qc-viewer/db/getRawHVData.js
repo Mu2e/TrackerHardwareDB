@@ -5,7 +5,7 @@ const papa = require('papaparse') // for parsing csv
 
 router
   .get('/:id/:ch', async(req, res, next) =>{
-    const response = await fetch('https://dbdata0vm.fnal.gov:8444/QE/mu2e/prod/app/SQ/query?dbname=mu2e_tracker_prd&t=hvdata.panel'+req.params.id+'&c=timestamp,current'+req.params.ch+'&w=current'+req.params.ch+':ne:0');
+    const response = await fetch('https://dbdata0vm.fnal.gov:9443/QE/mu2e/prod/app/SQ/query?dbname=mu2e_tracker_prd&t=hvdata.panel'+req.params.id+'&c=timestamp,current'+req.params.ch+'&w=current'+req.params.ch+':ne:0');
     const hvData = await response.text();
 //      console.log(hvData);
       var parse_config = {header: true, 
