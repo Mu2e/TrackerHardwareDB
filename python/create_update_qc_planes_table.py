@@ -25,11 +25,11 @@ print("Creating " + outfilename + " for plane number " + str(plane_id) + "...");
 
 update_sql_file = open(outfilename, 'w')
 if (dict_args['add_panels'] != None):
-    update_sql_file.write("UPDATE qc.planes SET panels=ARRAY_CAT(panels, \'{" + ', '.join(dict_args['add_panels']) + "}\') where plane=" + str(plane_id) + ";\n");
+    update_sql_file.write("UPDATE qc.planes SET panels=ARRAY_CAT(panel_ids, \'{" + ', '.join(dict_args['add_panels']) + "}\') where plane_id=" + str(plane_id) + ";\n");
 if (dict_args['remove_panels'] != None):
     # Have to remove elements one at a time in psql
     for rem in dict_args['remove_panels']:
-        update_sql_file.write("UPDATE qc.planes SET panels=ARRAY_REMOVE(panels, "+rem+") where plane=" + str(plane_id) + ";\n");
+        update_sql_file.write("UPDATE qc.planes SET panel_ids=ARRAY_REMOVE(panel_ids, "+rem+") where plane_id=" + str(plane_id) + ";\n");
 
 
 print("Done!");

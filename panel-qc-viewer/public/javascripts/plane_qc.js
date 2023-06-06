@@ -23,7 +23,7 @@ showPlaneButton.addEventListener('click', async function () {
 	else {
 	    var panels = Array(6).fill(0);
 	    for (let i_panel = 0; i_panel < 6; ++i_panel) {
-		panels[i_panel] = plane_info[0]['panels'][i_panel];
+		panels[i_panel] = plane_info[0]['panel_ids'][i_panel];
 	    }
 
 	    for (let i_panel = 0; i_panel < 6; ++i_panel) {
