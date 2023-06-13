@@ -85,7 +85,7 @@ Plotly.newPlot(hv_data_vs_panel_plot, [ hv_data_exists, earboard_test ], layout)
 
 const plane_response = await fetch('allPlanes');
 const allPlaneInfo = await plane_response.json();
-
+//console.log(allPlaneInfo)
 var planes = Array(allPlaneInfo.length)
 var hv_exists_plane = Array(allPlaneInfo.length).fill(0)
 
@@ -95,7 +95,7 @@ for (let i_plane = 0; i_plane < planes.length; i_plane++) {
     for (let i_panel = 0; i_panel < panels.length; ++i_panel){
 	let panel_number = panels[i_panel];
 	const panel_info = allPanelInfo[panel_num_map.get(panel_number)];
-
+//	console.log(panel_number) // uncomment to check for missing panels
 	if (panel_info['max_erf_fit'].length != 0) {
 	    hv_exists_plane[i_plane] += 1;
 	}

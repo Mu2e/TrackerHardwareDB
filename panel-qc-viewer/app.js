@@ -29,7 +29,9 @@ app.use('/findPanels', require('./db/findPanels'));
 app.use('/find_panel', require('./routes/find_panel'));
 
 app.use('/hv_data', require('./routes/hv_data'));
-app.use('/getRawHVData', require('./db/getRawHVData'));
+app.use('/getRawHVTable', require('./db/getRawHVTable'));
+app.use('/getRawHVREADMEs', require('./db/getRawHVREADMEs'));
+app.use('/hv_readmes', require('./routes/hv_readmes'));
 
 app.use('/panel_qc', require('./routes/panel_qc'));
 app.use('/all_panel_qc', require('./routes/all_panel_qc'));
@@ -44,6 +46,8 @@ app.use('/fnal_plane_db', require('./routes/fnal_plane_db'));
 
 app.use('/getEarBoard', require('./db/getEarBoard'));
 app.use('/earboard', require('./routes/earboard'));
+
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
