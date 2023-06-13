@@ -4,13 +4,13 @@ block content
   .container
     br
     h2 Panel HV Data
-    h3 Analyzed Data
     .row
        .col-5
-         | Show analyzed HV data for panel number: 
+         | Show HV data for panel number: 
          input#panel_number_ana(type='number')
        .col-2
-         button#btnShowAnaHVData.btn.btn-block.btn-info Show Analyzed HV Data
+         button#btnShowAnaHVData.btn.btn-block.btn-info Show HV Data
+    h3 Analyzed Data
     .row
        .col-6
          | Raw Data
@@ -35,15 +35,12 @@ block content
          img#img_maxerf(style="width:650px;")
        .col-6
          img#img_deltatime(style="width:650px;")
-    h3 Raw Data
+    h3 List of Raw Data Files (time-ordered)
     .row
-       .col-5
-         | Show raw HV data for panel number (warning may take a while): 
-         input#panel_number_raw(type='number')
-       .col-2
-         button#btnShowRawHVData.btn.btn-block.btn-info Show Raw HV Data
-    .row
-         div#raw_hv_data_plot(style="width:1300px;height:1300px;")
+         | For information on how to retrieve files from cache see: 
+         a(href='https://mu2ewiki.fnal.gov/wiki/Tracker_Databases#Retrieving_raw_Fe55_data') Information on how to retrieve raw data files
+         a(href='./hv_readmes') Original README files
+         table#raw_hv_files_table(style="width:1300px;height:1300px;")
     h2 Verbose Output
     .row
         pre#log.
