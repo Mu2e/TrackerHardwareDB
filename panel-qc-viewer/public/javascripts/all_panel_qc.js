@@ -20,7 +20,7 @@ for (let i_panel = 0; i_panel < panels.length; i_panel++) {
 	hv_exists[i_panel] = 1;
     }
     if (allPanelInfo[i_panel]["earboard"] == true) {
-	console.log(allPanelInfo[i_panel]['earboard'])
+//	console.log(allPanelInfo[i_panel]['earboard'])
 	passed_earboard_test[i_panel] = 1;
     }
     else if (allPanelInfo[i_panel]["earboard"] == false) {
@@ -50,8 +50,8 @@ for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
 }
 var single_channel_issue_vs_panel_plot = document.getElementById('single_channel_issue_vs_panel_plot');
 var xaxis = {title : {text : 'panel number'}, tickmode : "linear", tick0 : 0.0, dtick : 10.0, gridwidth : 2};
-var yaxis = {title : {text : 'no. of channels with single-channel issues'}};
-var layout = { title : {text: "All Single-Channel Issues vs Panel Number"},
+var yaxis = {title : {text : 'no. of channels with issues'}};
+var layout = { title : {text: "All Issues vs Panel Number"},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
 	       scroolZoom : true };
@@ -82,16 +82,47 @@ var layout = { title : {text: "Yes / No / Unknown Questions"},
 	       scroolZoom : true };
 Plotly.newPlot(hv_data_vs_panel_plot, [ hv_data_exists, earboard_test ], layout);
 
+////
+// Plane QC Summary
+//
 
 const plane_response = await fetch('allPlanes');
 const allPlaneInfo = await plane_response.json();
 //console.log(allPlaneInfo)
 var planes = Array(allPlaneInfo.length)
+var single_channel_n_data_plane = Array(single_ch_issues.length)
 var hv_exists_plane = Array(allPlaneInfo.length).fill(0)
+var passed_earboard_plane = Array(allPlaneInfo.length).fill(0)
+
+for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
+    var n_issue = Array(allPlaneInfo.length);
+    var issue = single_ch_issues[i_issue];
+//    console.log(issue)
+    for (let i_plane = 0; i_plane < planes.length; i_plane++) {
+	n_issue[i_plane] = 0;
+	planes[i_plane] = allPlaneInfo[i_plane]['plane_id'];
+	let panels = allPlaneInfo[i_plane]['panel_ids']
+	for (let i_panel = 0; i_panel < panels.length; ++i_panel){
+	    let panel_number = panels[i_panel];
+	    const panel_info = allPanelInfo[panel_num_map.get(panel_number)];
+	    if (panel_info[issue] != null) {
+		n_issue[i_plane] += panel_info[issue].length;
+	    }
+	}
+    }
+
+    // Define Data
+    single_channel_n_data_plane[i_issue] = {name : issue,
+					  x: planes,
+					  y: n_issue,
+					  mode:"markers",
+					  type:"scatter"
+					 }
+}
 
 for (let i_plane = 0; i_plane < planes.length; i_plane++) {
-    planes[i_plane] = allPlaneInfo[i_plane]['plane_id'];
     let panels = allPlaneInfo[i_plane]['panel_ids']
+
     for (let i_panel = 0; i_panel < panels.length; ++i_panel){
 	let panel_number = panels[i_panel];
 	const panel_info = allPanelInfo[panel_num_map.get(panel_number)];
@@ -99,19 +130,39 @@ for (let i_plane = 0; i_plane < planes.length; i_plane++) {
 	if (panel_info['max_erf_fit'].length != 0) {
 	    hv_exists_plane[i_plane] += 1;
 	}
+	if (panel_info["earboard"] == true) {
+	    passed_earboard_plane[i_plane] += 1;
+	}
     }
 }
+
+
+var single_channel_issue_vs_plane_plot = document.getElementById('single_channel_issue_vs_plane_plot');
+var xaxis = {title : {text : 'plane number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0, gridwidth : 2};
+var yaxis = {title : {text : 'no. of channels with issues'}};
+var layout = { title : {text: "All Issues vs Plane Number"},
+	       xaxis : xaxis,
+	       yaxis : yaxis,
+	       scroolZoom : true };
+Plotly.newPlot(single_channel_issue_vs_plane_plot, single_channel_n_data_plane, layout);
+
 var hv_data_vs_plane_plot = document.getElementById('hv_data_vs_plane_plot');
-var hv_data_exists_plane = {name : "hv_data_exists",
+var hv_data_exists_plane = {name : "...have HV data",
 		      x: planes,
 		      y: hv_exists_plane,
 		      mode:"markers",
 		      type:"scatter"
 		     }
+var earboard_test_plane = {name : "...passed earboard test",
+		      x: planes,
+		      y: passed_earboard_plane,
+		      mode:"markers",
+		      type:"scatter"
+		     }
 var xaxis = {title : {text : 'plane number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0, gridwidth : 2};
-var yaxis = {title : {text : 'no. of panels with HV data'}, tick0 : 0.0, dtick : 1, range : [0, 6] };
-var layout = { title : {text: "HV Data per Plane"},
+var yaxis = {title : {text : 'Number of panels in plane'}, tick0 : 0.0, dtick : 1, range : [0, 7] };
+var layout = { title : {text: "Number of panels in plane that..."},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
 	       scroolZoom : true };
-Plotly.newPlot(hv_data_vs_plane_plot, [ hv_data_exists_plane ], layout);
+Plotly.newPlot(hv_data_vs_plane_plot, [ hv_data_exists_plane, earboard_test_plane ], layout);
