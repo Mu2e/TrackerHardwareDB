@@ -11,11 +11,15 @@ const allPanelInfo = await response.json();
 var single_channel_n_data = Array(single_ch_issues.length)
 var panels = Array(allPanelInfo.length)
 var panel_num_map = new Map();
+var highest_panel_id = 0;
 var hv_exists = Array(allPanelInfo.length).fill(0)
 var passed_earboard_test = Array(allPanelInfo.length).fill(0)
 for (let i_panel = 0; i_panel < panels.length; i_panel++) {
     panels[i_panel] = allPanelInfo[i_panel]['panel_id'];
     panel_num_map.set(allPanelInfo[i_panel]['panel_id'], i_panel);
+    if (allPanelInfo[i_panel]['panel_id'] > highest_panel_id) {
+	highest_panel_id = allPanelInfo[i_panel]['panel_id'];
+    }
     if (allPanelInfo[i_panel]['max_erf_fit'].length != 0) {
 	hv_exists[i_panel] = 1;
     }
@@ -45,7 +49,7 @@ for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
 					  x: panels,
 					  y: n_issue,
 					  mode:"markers",
-					  type:"scatter"
+					  type:"bar"
 					 }
 }
 var single_channel_issue_vs_panel_plot = document.getElementById('single_channel_issue_vs_panel_plot');
@@ -55,6 +59,8 @@ var layout = { title : {text: "All Issues vs Panel Number"},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
 	       scroolZoom : true,
+	       barmode : "stack",
+	       shapes: [ {type: 'line', x0: 0, y0: 5.0, x1: highest_panel_id, y1: 5.0, line:{ color: 'rgb(0, 0, 0)', width: 4, dash:'dot'} } ]
 	     };
 Plotly.newPlot(single_channel_issue_vs_panel_plot, single_channel_n_data, layout);
 
@@ -150,7 +156,7 @@ var layout = { title : {text: "All Issues vs Plane Number"},
 	       yaxis : yaxis,
 	       scroolZoom : true,
 	       barmode : 'stack',
-	       shapes: [ {type: 'line', x0: 0, y0: 30.0, x1: planes.length, y1: 30.0, line:{ color: 'rgb(255, 0, 0)', width: 4, dash:'dot'} } ]
+	       shapes: [ {type: 'line', x0: 0, y0: 30.0, x1: planes.length, y1: 30.0, line:{ color: 'rgb(0, 0, 0)', width: 4, dash:'dot'} } ]
 	     };
 Plotly.newPlot(single_channel_issue_vs_plane_plot, single_channel_n_data_plane, layout);
 
