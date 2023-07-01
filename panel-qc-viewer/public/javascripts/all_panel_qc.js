@@ -54,7 +54,8 @@ var yaxis = {title : {text : 'no. of channels with issues'}};
 var layout = { title : {text: "All Issues vs Panel Number"},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
-	       scroolZoom : true };
+	       scroolZoom : true,
+	     };
 Plotly.newPlot(single_channel_issue_vs_panel_plot, single_channel_n_data, layout);
 
 var hv_data_vs_panel_plot = document.getElementById('hv_data_vs_panel_plot');
@@ -93,6 +94,7 @@ var planes = Array(allPlaneInfo.length)
 var single_channel_n_data_plane = Array(single_ch_issues.length)
 var hv_exists_plane = Array(allPlaneInfo.length).fill(0)
 var passed_earboard_plane = Array(allPlaneInfo.length).fill(0)
+var failed_earboard_plane = Array(allPlaneInfo.length).fill(0)
 
 for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
     var n_issue = Array(allPlaneInfo.length);
@@ -116,7 +118,7 @@ for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
 					  x: planes,
 					  y: n_issue,
 					  mode:"markers",
-					  type:"scatter"
+					  type:"bar"
 					 }
 }
 
@@ -133,6 +135,9 @@ for (let i_plane = 0; i_plane < planes.length; i_plane++) {
 	if (panel_info["earboard"] == true) {
 	    passed_earboard_plane[i_plane] += 1;
 	}
+	if (panel_info["earboard"] == false) {
+	    failed_earboard_plane[i_plane] += 1;
+	}
     }
 }
 
@@ -143,7 +148,10 @@ var yaxis = {title : {text : 'no. of channels with issues'}};
 var layout = { title : {text: "All Issues vs Plane Number"},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
-	       scroolZoom : true };
+	       scroolZoom : true,
+	       barmode : 'stack',
+	       shapes: [ {type: 'line', x0: 0, y0: 30.0, x1: planes.length, y1: 30.0, line:{ color: 'rgb(255, 0, 0)', width: 4, dash:'dot'} } ]
+	     };
 Plotly.newPlot(single_channel_issue_vs_plane_plot, single_channel_n_data_plane, layout);
 
 var hv_data_vs_plane_plot = document.getElementById('hv_data_vs_plane_plot');
@@ -151,18 +159,25 @@ var hv_data_exists_plane = {name : "...have HV data",
 		      x: planes,
 		      y: hv_exists_plane,
 		      mode:"markers",
-		      type:"scatter"
+		      type:"bar"
 		     }
-var earboard_test_plane = {name : "...passed earboard test",
-		      x: planes,
-		      y: passed_earboard_plane,
-		      mode:"markers",
-		      type:"scatter"
-		     }
+var passed_earboard_test_plane = {name : "...passed earboard test",
+				  x: planes,
+				  y: passed_earboard_plane,
+				  mode:"markers",
+				  type:"bar"
+				 }
+var failed_earboard_test_plane = {name : "...failed earboard test",
+				  x: planes,
+				  y: failed_earboard_plane,
+				  mode:"markers",
+				  type:"bar"
+				 }
+
 var xaxis = {title : {text : 'plane number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0, gridwidth : 2};
 var yaxis = {title : {text : 'Number of panels in plane'}, tick0 : 0.0, dtick : 1, range : [0, 7] };
 var layout = { title : {text: "Number of panels in plane that..."},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
-	       scroolZoom : true };
-Plotly.newPlot(hv_data_vs_plane_plot, [ hv_data_exists_plane, earboard_test_plane ], layout);
+	       scroolZoom : true};
+Plotly.newPlot(hv_data_vs_plane_plot, [ hv_data_exists_plane, passed_earboard_test_plane, failed_earboard_test_plane ], layout);
