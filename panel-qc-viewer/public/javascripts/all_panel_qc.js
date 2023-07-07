@@ -1,20 +1,8 @@
 import { single_channel_issues } from './single_channel_issues.js'
+import { has_hv_data } from './has_data_functions.js'
 const single_ch_issues = single_channel_issues();
 const doublet_channel_issues = [ ];
 
-function has_hv_data(panel_info) {
-
-    if (panel_info['high_current_wires'].length != 0 ||
-	panel_info['sparking_wires'].length != 0 ||
-	panel_info['short_wires'].length != 0 ||
-	panel_info['max_erf_fit'].length != 0) {
-
-	return true;
-    }
-    else {
-	return false;
-    }
-}
 
 //
 // All Panels Plot
