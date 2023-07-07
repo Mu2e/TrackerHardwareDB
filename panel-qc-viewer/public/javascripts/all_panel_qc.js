@@ -1,5 +1,5 @@
 import { single_channel_issues } from './single_channel_issues.js'
-import { has_hv_data } from './has_data_functions.js'
+import { has_hv_data, has_fe55_data } from './has_data_functions.js'
 const single_ch_issues = single_channel_issues();
 const doublet_channel_issues = [ ];
 
@@ -27,7 +27,7 @@ for (let i_panel = 0; i_panel < panels.length; i_panel++) {
 	highest_panel_id = allPanelInfo[i_panel]['panel_id'];
     }
 
-    if (allPanelInfo[i_panel]['max_erf_fit'].length != 0) {
+    if (has_fe55_data(allPanelInfo[i_panel])) {
 	fe55_exists[i_panel] = yes-0.05;
     }
     else {
@@ -158,7 +158,7 @@ for (let i_plane = 0; i_plane < planes.length; i_plane++) {
 	let panel_number = panels[i_panel];
 	const panel_info = allPanelInfo[panel_num_map.get(panel_number)];
 //	console.log(panel_number) // uncomment to check for missing panels
-	if (panel_info['max_erf_fit'].length != 0) {
+	if (has_fe55_data(panel_info)) {
 	    fe55_exists_plane[i_plane] += 1;
 	}
 	if (has_hv_data(panel_info)) {

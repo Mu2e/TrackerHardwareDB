@@ -12,3 +12,15 @@ export function has_hv_data(panel_info) {
 	return false;
     }
 }
+
+
+export function has_fe55_data(panel_info) {
+
+    if (panel_info['max_erf_fit'].length != 0) {
+
+	return true;
+    }
+    else {
+	return false;
+    }
+}
