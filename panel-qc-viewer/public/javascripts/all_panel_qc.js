@@ -29,30 +29,37 @@ var highest_panel_id = 0;
 var hv_exists = Array(allPanelInfo.length).fill(0)
 var fe55_exists = Array(allPanelInfo.length).fill(0)
 var passed_earboard_test = Array(allPanelInfo.length).fill(0)
+var yes = 1.0;
+var no = 0.0;
+var unknown = -0.5;
 for (let i_panel = 0; i_panel < panels.length; i_panel++) {
     panels[i_panel] = allPanelInfo[i_panel]['panel_id'];
     panel_num_map.set(allPanelInfo[i_panel]['panel_id'], i_panel);
     if (allPanelInfo[i_panel]['panel_id'] > highest_panel_id) {
 	highest_panel_id = allPanelInfo[i_panel]['panel_id'];
     }
+
     if (allPanelInfo[i_panel]['max_erf_fit'].length != 0) {
-	fe55_exists[i_panel] = 1;
-    }
-    if (has_hv_data(allPanelInfo[i_panel])) {
-	hv_exists[i_panel] = 1;
+	fe55_exists[i_panel] = yes-0.05;
     }
     else {
-	hv_exists[i_panel] = -0.2; // could be that it's a perfectly good panel
+	fe55_exists[i_panel] = no-0.05;
+    }
+    if (has_hv_data(allPanelInfo[i_panel])) {
+	hv_exists[i_panel] = yes;
+    }
+    else {
+	hv_exists[i_panel] = unknown; // could be that it's a perfectly good panel
     }
     if (allPanelInfo[i_panel]["earboard"] == true) {
 //	console.log(allPanelInfo[i_panel]['earboard'])
-	passed_earboard_test[i_panel] = 1;
+	passed_earboard_test[i_panel] = yes+0.05;
     }
     else if (allPanelInfo[i_panel]["earboard"] == false) {
-	passed_earboard_test[i_panel] = 0;
+	passed_earboard_test[i_panel] = no+0.05;
     }
     else {
-	passed_earboard_test[i_panel] = -0.2;
+	passed_earboard_test[i_panel] = unknown+0.05;
     }
 }
 for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
@@ -107,7 +114,7 @@ var earboard_test = {name : "Passed Earboard Test?",
 var xaxis = {title : {text : 'panel number'}, tickmode : "linear", tick0 : 0.0, dtick : 10.0, gridwidth : 2};
 var yaxis = {title : {text : ''}, 
 	     tickmode: "array",
-	     tickvals: [0, 1, -0.2],
+	     tickvals: [no, yes, unknown],
 	     ticktext: ['no', 'yes', 'unknown']
 	    };
 var layout = { title : {text: "Yes / No / Unknown Questions"},
