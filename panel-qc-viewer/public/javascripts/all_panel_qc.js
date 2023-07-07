@@ -2,6 +2,20 @@ import { single_channel_issues } from './single_channel_issues.js'
 const single_ch_issues = single_channel_issues();
 const doublet_channel_issues = [ ];
 
+function has_hv_data(panel_info) {
+
+    if (panel_info['high_current_wires'].length != 0 ||
+	panel_info['sparking_wires'].length != 0 ||
+	panel_info['short_wires'].length != 0 ||
+	panel_info['max_erf_fit'].length != 0) {
+
+	return true;
+    }
+    else {
+	return false;
+    }
+}
+
 //
 // All Panels Plot
 //
@@ -12,6 +26,7 @@ var single_channel_n_data = Array(single_ch_issues.length)
 var panels = Array(allPanelInfo.length)
 var panel_num_map = new Map();
 var highest_panel_id = 0;
+var hv_exists = Array(allPanelInfo.length).fill(0)
 var fe55_exists = Array(allPanelInfo.length).fill(0)
 var passed_earboard_test = Array(allPanelInfo.length).fill(0)
 for (let i_panel = 0; i_panel < panels.length; i_panel++) {
@@ -22,6 +37,12 @@ for (let i_panel = 0; i_panel < panels.length; i_panel++) {
     }
     if (allPanelInfo[i_panel]['max_erf_fit'].length != 0) {
 	fe55_exists[i_panel] = 1;
+    }
+    if (has_hv_data(allPanelInfo[i_panel])) {
+	hv_exists[i_panel] = 1;
+    }
+    else {
+	hv_exists[i_panel] = -0.2; // could be that it's a perfectly good panel
     }
     if (allPanelInfo[i_panel]["earboard"] == true) {
 //	console.log(allPanelInfo[i_panel]['earboard'])
@@ -71,6 +92,12 @@ var fe55_data_exists = {name : "Fe55 Data Exists?",
 		      mode:"markers",
 		      type:"scatter"
 		     }
+var hv_data_exists = {name : "HV Data Exists?",
+		      x: panels,
+		      y: hv_exists,
+		      mode:"markers",
+		      type:"scatter"
+		     }
 var earboard_test = {name : "Passed Earboard Test?",
 		     x: panels,
 		     y: passed_earboard_test,
@@ -87,7 +114,7 @@ var layout = { title : {text: "Yes / No / Unknown Questions"},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
 	       scroolZoom : true };
-Plotly.newPlot(has_data_vs_panel_plot, [ fe55_data_exists, earboard_test ], layout);
+Plotly.newPlot(has_data_vs_panel_plot, [ hv_data_exists, fe55_data_exists, earboard_test ], layout);
 
 ////
 // Plane QC Summary
@@ -99,6 +126,7 @@ const allPlaneInfo = await plane_response.json();
 var planes = Array(allPlaneInfo.length)
 var single_channel_n_data_plane = Array(single_ch_issues.length)
 var fe55_exists_plane = Array(allPlaneInfo.length).fill(0)
+var hv_exists_plane = Array(allPlaneInfo.length).fill(0)
 var passed_earboard_plane = Array(allPlaneInfo.length).fill(0)
 var failed_earboard_plane = Array(allPlaneInfo.length).fill(0)
 
@@ -138,6 +166,9 @@ for (let i_plane = 0; i_plane < planes.length; i_plane++) {
 	if (panel_info['max_erf_fit'].length != 0) {
 	    fe55_exists_plane[i_plane] += 1;
 	}
+	if (has_hv_data(panel_info)) {
+	    hv_exists_plane[i_plane] += 1;
+	}
 	if (panel_info["earboard"] == true) {
 	    passed_earboard_plane[i_plane] += 1;
 	}
@@ -167,6 +198,12 @@ var fe55_data_exists_plane = {name : "...have Fe55 data",
 		      mode:"markers",
 		      type:"bar"
 		     }
+var hv_data_exists_plane = {name : "...have HV data",
+		      x: planes,
+		      y: hv_exists_plane,
+		      mode:"markers",
+		      type:"bar"
+		     }
 var passed_earboard_test_plane = {name : "...passed earboard test",
 				  x: planes,
 				  y: passed_earboard_plane,
@@ -186,4 +223,4 @@ var layout = { title : {text: "Number of panels in plane that..."},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
 	       scroolZoom : true};
-Plotly.newPlot(has_data_vs_plane_plot, [ fe55_data_exists_plane, passed_earboard_test_plane, failed_earboard_test_plane ], layout);
+Plotly.newPlot(has_data_vs_plane_plot, [ hv_data_exists_plane, fe55_data_exists_plane, passed_earboard_test_plane, failed_earboard_test_plane ], layout);
