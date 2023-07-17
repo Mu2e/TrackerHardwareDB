@@ -2,22 +2,28 @@ import os
 import time
 
 def usage():
-    print("Usage: python3 create_imported_fnal_planesdb.py path/to/paneldb")
+    print("Usage: python3 create_imported_fnal_planesdb.py path/to/paneldb YYYY_MM_DD")
+    print("where YYYY_MM_DD is the snapshot date")
     exit(1);
 
 def replace_problem_chars(string):
     return string.replace(' ', '_').replace('.', '').replace('\'', '').replace("&", "and").replace("-", '').replace("(", '').replace(")", '');
 
-if (len(os.sys.argv) != 2):
+if (len(os.sys.argv) != 3):
     usage()
 elif (os.sys.argv[1] == "-h" or os.sys.argv[1] == "--help"):
     usage()
 
 basedir=os.sys.argv[1]
 if (not os.path.exists(basedir)):
-    print("Directory \"" + basedir + "\" does not exist");
+    print("Directory \"" + basedir + "\" does not exist. Exiting...");
     exit(1);
+snapshot_date = os.sys.argv[2]
+if ("_" not in snapshot_date):
+    print("Format should be YYYY_MM_DD. Exiting...")
+    exit(1)
 
+most_recent=0.
 print(basedir)
 all_contents=[]
 with os.scandir(basedir) as plane_dirs:
@@ -50,23 +56,28 @@ with os.scandir(basedir) as plane_dirs:
 #                                    mtime = time.ctime(os.path.getmtime(filename))
                                     mtime = time.strftime("%Y-%m-%d %H:%M:%S", time.strptime(time.ctime(os.path.getmtime(filename))))
                                     this_contents["last_modified"] = mtime;
+                                    if (os.path.getmtime(filename) > most_recent):
+                                        most_recent = os.path.getmtime(filename)
                                     all_contents.append(this_contents)
 
+print("Most recent = ", time.ctime(most_recent))
 create_sql_file = open('../sql/create_imported_fnal_planesdb.sql', 'w')
 create_sql_file.write("set role mu2e_tracker_admin;\n")
 #create_sql_file.write("create schema imported;\n")
 #create_sql_file.write("grant usage on schema imported to public;\n")
-create_sql_file.write("CREATE TABLE imported.fnal_planes_previous AS SELECT * FROM imported.fnal_planes;\n"); # create backup of previous version
-create_sql_file.write("DROP TABLE imported.fnal_planes;\n");
-create_sql_file.write("CREATE TABLE imported.fnal_planes(id integer primary key, panel_id integer, file_name text, file_contents text, last_modified timestamp);\n")
+create_sql_file.write("DROP TABLE imported.fnal_planes_previous;\n"); # drop the current table, we will recreate it at the end
+create_sql_file.write("CREATE TABLE imported.fnal_planes_previous AS SELECT * FROM imported.fnal_planes;\n")
+create_sql_file.write("GRANT SELECT ON imported.fnal_planes_previous TO public;\n");
+create_sql_file.write("DROP TABLE imported.fnal_planes;\n"); # drop the current table, we will recreate it at the end
+table_name = "imported.fnal_planes_"+snapshot_date
+create_sql_file.write("CREATE TABLE "+table_name+"(id integer primary key, panel_id integer, file_name text, file_contents text, last_modified timestamp);\n")
 
-create_sql_file.write("grant select on imported.fnal_planes to public;\n");
-create_sql_file.write("grant insert on imported.fnal_planes to mu2e_tracker_admin;\n");
-create_sql_file.write("grant select on imported.fnal_planes_previous to public;\n");
+create_sql_file.write("grant select on "+table_name+" to public;\n");
+create_sql_file.write("grant insert on "+table_name+" to mu2e_tracker_admin;\n");
 
 counter=0
 insert_sql_file = open('../sql/insert_imported_fnal_planesdb.sql', 'w')
-insert_sql_file.write('INSERT INTO imported.fnal_planes(id, panel_id, file_name, file_contents, last_modified)\n')
+insert_sql_file.write('INSERT INTO '+table_name+'(id, panel_id, file_name, file_contents, last_modified)\n')
 insert_sql_file.write("VALUES");
 for content in all_contents:
     if (counter > 0):
@@ -84,4 +95,6 @@ for content in all_contents:
     counter=counter+1;
 #    if counter > 2:
 #        break
-insert_sql_file.write(";");
+insert_sql_file.write(";\n");
+insert_sql_file.write("CREATE TABLE imported.fnal_planes AS SELECT * FROM "+table_name+";\n")
+insert_sql_file.write("GRANT SELECT ON imported.fnal_planes TO public;")

@@ -1,4 +1,5 @@
 import { single_channel_issues } from './single_channel_issues.js'
+import { has_hv_data, has_fe55_data } from './has_data_functions.js'
 
 export function plot_panel_qc(panel_info, straw_status_plot) {
 
@@ -120,7 +121,15 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
 //	if (i != data.length-1) { output += ", "; }
     }
 
-    output += "\n\t HV data: ";
+    output += "\n\t Has HV data? ";
+    if (has_hv_data(this_panel_issues)) {
+	output += "yes";
+    }
+    else {
+	output += "unknown";
+    }
+
+    output += "\n\t Fe55 data: ";
     var maxerf_risetime_filenames = this_panel_issues["maxerf_risetime_filenames"];
     if (maxerf_risetime_filenames.length == 0) {
 	output += "none";

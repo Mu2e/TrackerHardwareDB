@@ -4,7 +4,7 @@ create schema qc;
 grant usage on schema qc to public;
 
 create table qc.panels (
-	id integer primary key,
+       	panel_id integer primary key,
 	missing_straws integer[] DEFAULT '{}',
 	high_current_wires integer[] DEFAULT '{}',
 	blocked_straws integer[] DEFAULT '{}',
@@ -21,6 +21,7 @@ create table qc.panels (
 	missing_wires integer[] DEFAULT '{}',
 	maxerf_risetime_filenames text[] DEFAULT '{}',
 	earboard BOOLEAN,
+	hv_test_done BOOLEAN
 );
 
 grant select on qc.panels to public;

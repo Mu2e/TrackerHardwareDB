@@ -33,11 +33,13 @@ app.use('/getRawHVTable', require('./db/getRawHVTable'));
 app.use('/getRawHVREADMEs', require('./db/getRawHVREADMEs'));
 app.use('/hv_readmes', require('./routes/hv_readmes'));
 
+app.use('/getPanelRepairs', require('./db/getPanelRepairs'));
 app.use('/panel_qc', require('./routes/panel_qc'));
 app.use('/all_panel_qc', require('./routes/all_panel_qc'));
 
 app.use('/allPlanes', require('./db/allPlanes'));
 app.use('/getPlane', require('./db/getPlane'));
+app.use('/getPlaneRepairs', require('./db/getPlaneRepairs'));
 app.use('/plane_qc', require('./routes/plane_qc'));
 
 app.use('/getPanelFromFNALPlanesDB', require('./db/getPanelFromFNALPlanesDB'));
