@@ -33,3 +33,6 @@ grant select on repairs.planes to public;
 grant insert on repairs.planes to mu2e_tracker_admin;
 grant insert on repairs.planes to mu2e_tracker_writer;
 grant update on repairs.planes to mu2e_tracker_writer;
+
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA repairs TO mu2e_tracker_admin;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA repairs TO mu2e_tracker_writer;
