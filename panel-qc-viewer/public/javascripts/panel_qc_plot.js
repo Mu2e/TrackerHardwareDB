@@ -116,7 +116,14 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
 	    else {
 		output += ", ";
 	    }
-	    output += this_panel_issue.length + " " + the_issue;
+	    output += this_panel_issue.length + " " + the_issue + " (";
+	    for (let i_channel = 0; i_channel < this_panel_issue.length; ++i_channel) {
+		output += "#" + this_panel_issue[i_channel];
+		if (i_channel < this_panel_issue.length-1) {
+		    output += ",";
+		}
+	    }
+	    output += ")";
 	}
 //	if (i != data.length-1) { output += ", "; }
     }
