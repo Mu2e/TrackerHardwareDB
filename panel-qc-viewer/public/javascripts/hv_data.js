@@ -91,7 +91,114 @@ showAnaHVDataButton.addEventListener('click', async function () {
     }
 	    
 
-    // Now do the table
+    // Now make a plot of all the previous max_erf_fit and rise_time data that is in the repairs table
+
+    var all_wires = Array(96).fill(0)
+    var wire_numbers = Array(96).fill(0)
+    for (let i = 0; i < all_wires.length; i++) {
+	wire_numbers[i] = i;
+    }
+
+    if (!isNaN(panel_number)) {
+	const response = await fetch('getPanel/'+panel_number);
+	const panel_info = await response.json();
+
+	const repairs_table_response = await fetch('getPanelRepairs/'+panel_number);
+	const repairs_table_info = await repairs_table_response.json();
+
+	// get the old max_erf_fit and rise_time_data
+	var old_max_erf_data = [];
+	var old_rise_time_data = [];
+	var old_filenames = [];
+	for (let i_repair = 0; i_repair < repairs_table_info.length; ++i_repair) {
+	    if (repairs_table_info[i_repair]['column_changed'] == 'max_erf_fit'){
+		var string_to_parse = repairs_table_info[i_repair]['old_value'].replace('{','').replace('}','')
+		old_max_erf_data.push(JSON.parse("[" + string_to_parse + "]")); // data stored as a string so split it
+	    }
+	    if (repairs_table_info[i_repair]['column_changed'] == 'rise_time'){
+		var string_to_parse = repairs_table_info[i_repair]['old_value'].replace('{','').replace('}','')
+		old_rise_time_data.push(JSON.parse("[" + string_to_parse + "]")); // data stored as a string so split it
+	    }
+	    if (repairs_table_info[i_repair]['column_changed'] == 'maxerf_risetime_filenames'){
+		old_filenames.push(repairs_table_info[i_repair]['old_value']);
+	    }
+	}
+	
+	var this_panel_info = panel_info[0]
+	var doublet_numbers = Array(48).fill(0)
+	for (let i = 0; i < doublet_numbers.length; i++) {
+	    doublet_numbers[i] = (2*i+0.5);
+	}
+
+	var all_max_erf_data = Array(old_max_erf_data.length + 1) // +1 for current data
+	var max_erf_fits = this_panel_info['max_erf_fit'];
+	var max_erf_fit_data = {
+	    name : JSON.stringify(this_panel_info['maxerf_risetime_filenames']),
+	    type : 'scatter',
+	    x: doublet_numbers,
+	    y: max_erf_fits,
+	    mode : 'lines+markers'
+	};	    
+	all_max_erf_data[0] = max_erf_fit_data;
+	for (let i_data = 0; i_data < old_max_erf_data.length; ++i_data) {
+	    var this_data = { name : old_filenames[i_data],
+			      type : 'scatter',
+			      x : doublet_numbers,
+			      y : old_max_erf_data[i_data],
+			      mode : 'lines+markers'
+			    }
+	    all_max_erf_data[i_data+1] = this_data;
+	}
+
+	var xaxis = {title : {text : 'straw number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0, gridwidth : 2, range : [-0.5, 96.5]};
+	var yaxis = {title: {text : 'Max Erf Fit [nA]'}, tickmode : "linear", tick0 : 0.0, dtick : 0.2, gridwidth : 2, range : [-0.2, 1.2]};
+	var layout = { title : {text: this_title + " Max Erf Fit"},
+		       xaxis : xaxis,
+		       yaxis : yaxis,
+//		       barmode : 'stack',
+		       legend: {"orientation": "h"},
+		       //		   margin: {t:0},
+		       scroolZoom : true }; 
+
+	max_erf_history_plot = document.getElementById('max_erf_history_plot');
+	Plotly.newPlot(max_erf_history_plot, all_max_erf_data, layout);	    
+
+	var all_rise_time_data = Array(old_rise_time_data.length + 1) // +1 for current data
+	var rise_times = this_panel_info['rise_time'];
+	var rise_time_data = {
+	    name : JSON.stringify(this_panel_info['maxerf_risetime_filenames']),
+	    type : 'scatter',
+	    x: doublet_numbers,
+	    y: rise_times,
+	    mode : 'lines+markers'
+	};	    
+	all_rise_time_data[0] = rise_time_data;
+	for (let i_data = 0; i_data < old_rise_time_data.length; ++i_data) {
+	    var this_data = { name : old_filenames[i_data],
+			      type : 'scatter',
+			      x : doublet_numbers,
+			      y : old_rise_time_data[i_data],
+			      mode : 'lines+markers'
+			    }
+	    all_rise_time_data[i_data+1] = this_data;
+	}
+
+	var xaxis = {title : {text : 'straw number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0, gridwidth : 2, range : [-0.5, 96.5]};
+	var yaxis = {title: {text : 'Rise Time [min]'}, tickmode : "linear", tick0 : 0.0, dtick : 10, gridwidth : 2, range : [0, 60]};
+	var layout = { title : {text: this_title + " Max Erf Fit"},
+		       xaxis : xaxis,
+		       yaxis : yaxis,
+//		       barmode : 'stack',
+		       legend: {"orientation": "h"},
+		       //		   margin: {t:0},
+		       scroolZoom : true }; 
+
+	rise_time_history_plot = document.getElementById('rise_time_history_plot');
+	Plotly.newPlot(rise_time_history_plot, all_rise_time_data, layout);	    
+
+    }
+
+    // Now do the table of raw data file names and tarball locations
     var cols = ["filename", "first_timestamp", "last_timestamp", "tarball", "comment"]
     if (!isNaN(panel_number)) {
 	var this_title = "Panel "+panel_number;

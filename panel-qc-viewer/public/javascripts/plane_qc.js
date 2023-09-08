@@ -1,4 +1,5 @@
 import { plot_panel_qc } from './panel_qc_plot.js'
+import { draw_repairs_table } from './repairs_table.js'
 const form = document.querySelector("form");
 const log = document.querySelector("#log");
 
@@ -49,48 +50,15 @@ showPlaneButton.addEventListener('click', async function () {
 	document.getElementById("plane_info").innerHTML = output;
 
 	// Now do the plane repairs table
-	var cols = ["date_uploaded", "comment", "column_changed", "old_value", "new_value"];
-
 	const repairs_table_response = await fetch('getPlaneRepairs/'+plane_number);
-	const repairs_table = await repairs_table_response.json();
-	
+	const repairs_table_info = await repairs_table_response.json();
 	var over_table = document.getElementById("plane_repairs_table");
+	draw_repairs_table(repairs_table_info, over_table);
 
-	while (over_table.firstChild) {
-	    over_table.removeChild(over_table.lastChild);
-	}
-
-	var table = document.createElement('TABLE');
-	table.border = '1';
-
-	var tableBody = document.createElement('TBODY');
-	table.appendChild(tableBody);
-
-	for (var i = 0; i < repairs_table.length+1; i++) {
-	    var tr = document.createElement('TR');
-	    tableBody.appendChild(tr);
-	    tr.border = '1'
-
-	    for (var j = 0; j < cols.length; j++) {
-		var td = document.createElement('TD');
-		//		td.width = '75';
-		td.style.border = "1px solid #000"
-		if (i == 0) {
-		    td.appendChild(document.createTextNode([cols[j]]));
-		    td.style.textAlign = "center";
-		    td.style.borderBottomWidth = "2px"
-		}
-		else {
-		    td.appendChild(document.createTextNode(repairs_table[i-1][cols[j]]));
-		}
-		tr.appendChild(td);
-	    }
-	}
-	over_table.appendChild(table);
 
 
 	// Now do the panel repairs table
-	var cols = ["panel_id", "date_uploaded", "comment", "column_changed", "old_value", "new_value"];
+//	var cols = ["panel_id", "date_uploaded", "comment", "column_changed", "old_value", "new_value"];
 
 	var panels = Array(6).fill(0);
 	for (let i_panel = 0; i_panel < 6; ++i_panel) {
@@ -102,42 +70,12 @@ showPlaneButton.addEventListener('click', async function () {
 	    var this_title = "Panel "+panel_number.toString();
 		
 	    const repairs_panel_table_response = await fetch('getPanelRepairs/'+panel_number);
-	    const repairs_panel_table = await repairs_panel_table_response.json();
-	
-
+	    const repairs_panel_table_info = await repairs_panel_table_response.json();
 	    var over_panel_table = document.getElementById("panel"+(i_panel+1).toString()+"_repairs_table");
-
 	    while (over_panel_table.firstChild) {
 		over_panel_table.removeChild(over_panel_table.lastChild);
 	    }
-
-	    var panel_table = document.createElement('TABLE');
-	    panel_table.border = '1';
-
-	    var panel_tableBody = document.createElement('TBODY');
-	    panel_table.appendChild(panel_tableBody);
-
-	    for (var i = 0; i < repairs_panel_table.length+1; i++) {
-		var tr = document.createElement('TR');
-		panel_tableBody.appendChild(tr);
-		tr.border = '1'
-
-		for (var j = 0; j < cols.length; j++) {
-		    var td = document.createElement('TD');
-		    //		td.width = '75';
-		    td.style.border = "1px solid #000"
-		    if (i == 0) {
-			td.appendChild(document.createTextNode([cols[j]]));
-			td.style.textAlign = "center";
-			td.style.borderBottomWidth = "2px"
-		    }
-		    else {
-			td.appendChild(document.createTextNode(repairs_panel_table[i-1][cols[j]]));
-		    }
-		    tr.appendChild(td);
-		}
-	    }
-	    over_panel_table.appendChild(panel_table);
+	    draw_repairs_table(repairs_panel_table_info, over_panel_table, 'panel_id');
 	}
     }
     else {
