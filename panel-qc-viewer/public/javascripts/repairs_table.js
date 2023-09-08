@@ -20,6 +20,7 @@ export function draw_repairs_table(repairs_table_info, over_table, add_col='') {
 	tableBody.appendChild(tr);
 	tr.border = '1'
 
+	var truncate_old_and_new_vals = false;
 	for (var j = 0; j < cols.length; j++) {
 	    var td = document.createElement('TD');
 	    //		td.width = '75';
@@ -30,7 +31,18 @@ export function draw_repairs_table(repairs_table_info, over_table, add_col='') {
 		td.style.borderBottomWidth = "2px"
 	    }
 	    else {
-		td.appendChild(document.createTextNode(repairs_table_info[i-1][cols[j]]));
+		var string_to_write = repairs_table_info[i-1][cols[j]];
+		if (cols[j]=='column_changed') {
+		    if (repairs_table_info[i-1][cols[j]]=='max_erf_fit' || repairs_table_info[i-1][cols[j]]=='rise_time') {
+			truncate_old_and_new_vals = true;
+		    }
+		}
+		else {
+		    if (truncate_old_and_new_vals) {
+			string_to_write = repairs_table_info[i-1][cols[j]].slice(0, 9) + " ... " + repairs_table_info[i-1][cols[j]].slice(-9) + " ";
+		    }
+		}
+		td.appendChild(document.createTextNode(string_to_write));
 	    }
 	    tr.appendChild(td);
 	}
