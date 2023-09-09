@@ -106,49 +106,79 @@ showAnaHVDataButton.addEventListener('click', async function () {
 	const repairs_table_response = await fetch('getPanelRepairs/'+panel_number);
 	const repairs_table_info = await repairs_table_response.json();
 
-	// get the old max_erf_fit and rise_time_data
+	// get the max_erf_fit and rise_time_data
+	// use the "new values" from the repairs table so that the comment matches
+	var new_max_erf_data = [];
+	var new_rise_time_data = [];
+	var new_filenames = [];
+	var new_comments = [];
+	var first_data_found = false; // because some max_erf and rise_time data was already in the database, we don't necessarily have the first "repair" with old_value='{}' so we will keep track of the old data too and use it if we need to
 	var old_max_erf_data = [];
 	var old_rise_time_data = [];
 	var old_filenames = [];
 	for (let i_repair = 0; i_repair < repairs_table_info.length; ++i_repair) {
 	    if (repairs_table_info[i_repair]['column_changed'] == 'max_erf_fit'){
-		var string_to_parse = repairs_table_info[i_repair]['old_value'].replace('{','').replace('}','')
+		var string_to_parse = repairs_table_info[i_repair]['new_value'].replace('{','').replace('}','')
+		new_max_erf_data.push(JSON.parse("[" + string_to_parse + "]")); // data stored as a string so split it
+		string_to_parse = repairs_table_info[i_repair]['old_value'].replace('{','').replace('}','')
 		old_max_erf_data.push(JSON.parse("[" + string_to_parse + "]")); // data stored as a string so split it
+
+		if (repairs_table_info[i_repair]['old_value'] == "{}") {
+		    first_data_found = true;
+		}
 	    }
 	    if (repairs_table_info[i_repair]['column_changed'] == 'rise_time'){
-		var string_to_parse = repairs_table_info[i_repair]['old_value'].replace('{','').replace('}','')
+		var string_to_parse = repairs_table_info[i_repair]['new_value'].replace('{','').replace('}','')
+		new_rise_time_data.push(JSON.parse("[" + string_to_parse + "]")); // data stored as a string so split it
+		string_to_parse = repairs_table_info[i_repair]['old_value'].replace('{','').replace('}','')
 		old_rise_time_data.push(JSON.parse("[" + string_to_parse + "]")); // data stored as a string so split it
 	    }
 	    if (repairs_table_info[i_repair]['column_changed'] == 'maxerf_risetime_filenames'){
+		new_filenames.push(repairs_table_info[i_repair]['new_value']);
 		old_filenames.push(repairs_table_info[i_repair]['old_value']);
+		new_comments.push(repairs_table_info[i_repair]['comment']);
 	    }
 	}
-	
-	var this_panel_info = panel_info[0]
+	// it's possible we have no entries in the repair table with max_erf_fit or rise_time information so get it from the qc.panels table
+	var this_panel_info = panel_info[0];
+	console.log(new_max_erf_data.length);
+	if (new_max_erf_data.length == 0) {
+	    new_max_erf_data.push(this_panel_info['max_erf_fit']);
+	    new_rise_time_data.push(this_panel_info['rise_time']);
+	    new_filenames.push(JSON.stringify(this_panel_info['maxerf_risetime_filenames']));
+	    new_comments.push('first data');
+	    first_data_found = true;
+	}
+
+
+
+
 	var doublet_numbers = Array(48).fill(0)
 	for (let i = 0; i < doublet_numbers.length; i++) {
 	    doublet_numbers[i] = (2*i+0.5);
 	}
 
-	var all_max_erf_data = Array(old_max_erf_data.length + 1) // +1 for current data
-	var max_erf_fits = this_panel_info['max_erf_fit'];
-	var max_erf_fit_data = {
-	    name : JSON.stringify(this_panel_info['maxerf_risetime_filenames']),
-	    type : 'scatter',
-	    x: doublet_numbers,
-	    y: max_erf_fits,
-	    mode : 'lines+markers'
-	};	    
-	all_max_erf_data[0] = max_erf_fit_data;
-	for (let i_data = 0; i_data < old_max_erf_data.length; ++i_data) {
-	    var this_data = { name : old_filenames[i_data],
+	var all_max_erf_data = Array(new_max_erf_data.length);
+	for (let i_data = 0; i_data < new_max_erf_data.length; ++i_data) {
+	    var this_data = { name : new_comments[i_data] + " (" + new_filenames[i_data].replace('{','').replace('}','') + ")",
+			      type : 'scatter',
+			      x : doublet_numbers,
+			      y : new_max_erf_data[i_data],
+			      mode : 'lines+markers'
+			    }
+	    all_max_erf_data[i_data] = this_data;
+	}
+	if (first_data_found == false) {
+	    var i_data = new_max_erf_data.length - 1; // the very first data will be at the end of this array
+	    var this_data = { name : "first data (" + old_filenames[i_data].replace('{','').replace('}','') + ")",
 			      type : 'scatter',
 			      x : doublet_numbers,
 			      y : old_max_erf_data[i_data],
 			      mode : 'lines+markers'
 			    }
-	    all_max_erf_data[i_data+1] = this_data;
+	    all_max_erf_data.push(this_data);
 	}
+
 
 	var xaxis = {title : {text : 'straw number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0, gridwidth : 2, range : [-0.5, 96.5]};
 	var yaxis = {title: {text : 'Max Erf Fit [nA]'}, tickmode : "linear", tick0 : 0.0, dtick : 0.2, gridwidth : 2, range : [-0.2, 1.2]};
@@ -156,32 +186,36 @@ showAnaHVDataButton.addEventListener('click', async function () {
 		       xaxis : xaxis,
 		       yaxis : yaxis,
 //		       barmode : 'stack',
-		       legend: {"orientation": "h"},
+		       showlegend: true,
+		       legend: {xanchor : 'right', x : 1.0, y : 1.0},
 		       //		   margin: {t:0},
 		       scroolZoom : true }; 
 
 	max_erf_history_plot = document.getElementById('max_erf_history_plot');
 	Plotly.newPlot(max_erf_history_plot, all_max_erf_data, layout);	    
 
-	var all_rise_time_data = Array(old_rise_time_data.length + 1) // +1 for current data
+	var all_rise_time_data = Array(new_rise_time_data.length)
 	var rise_times = this_panel_info['rise_time'];
-	var rise_time_data = {
-	    name : JSON.stringify(this_panel_info['maxerf_risetime_filenames']),
-	    type : 'scatter',
-	    x: doublet_numbers,
-	    y: rise_times,
-	    mode : 'lines+markers'
-	};	    
-	all_rise_time_data[0] = rise_time_data;
-	for (let i_data = 0; i_data < old_rise_time_data.length; ++i_data) {
-	    var this_data = { name : old_filenames[i_data],
+	for (let i_data = 0; i_data < new_rise_time_data.length; ++i_data) {
+	    var this_data = { name : new_comments[i_data] + " (" + new_filenames[i_data].replace('{','').replace('}','') + ")",
+			      type : 'scatter',
+			      x : doublet_numbers,
+			      y : new_rise_time_data[i_data],
+			      mode : 'lines+markers'
+			    }
+	    all_rise_time_data[i_data] = this_data;
+	}
+	if (first_data_found == false) {
+	    var i_data = new_rise_time_data.length - 1; // the very first data will be at the end of this array
+	    var this_data = { name : "first data (" + old_filenames[i_data].replace('{','').replace('}','') + ")",
 			      type : 'scatter',
 			      x : doublet_numbers,
 			      y : old_rise_time_data[i_data],
 			      mode : 'lines+markers'
 			    }
-	    all_rise_time_data[i_data+1] = this_data;
+	    all_rise_time_data.push(this_data);
 	}
+
 
 	var xaxis = {title : {text : 'straw number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0, gridwidth : 2, range : [-0.5, 96.5]};
 	var yaxis = {title: {text : 'Rise Time [min]'}, tickmode : "linear", tick0 : 0.0, dtick : 10, gridwidth : 2, range : [0, 60]};
@@ -189,7 +223,8 @@ showAnaHVDataButton.addEventListener('click', async function () {
 		       xaxis : xaxis,
 		       yaxis : yaxis,
 //		       barmode : 'stack',
-		       legend: {"orientation": "h"},
+		       showlegend: true, 
+		       legend: {xanchor : 'right', x : 1.0, y : 1.0},
 		       //		   margin: {t:0},
 		       scroolZoom : true }; 
 
