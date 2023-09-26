@@ -36,6 +36,9 @@ for basedir in basedirs:
 
 readme_filenames=[]
 csv_filenames=[]
+dat_filenames=[]
+log_filenames=[]
+input_filenames=[]
 for basedir in basedirs:
     with os.scandir(basedir) as all_files:
         for i_file in all_files:
@@ -44,14 +47,22 @@ for basedir in basedirs:
                     continue;
                 if("README" in i_file.name):
                     readme_filenames.append(basedir+i_file.name)
-                if(".csv" in i_file.name):
+                if(".csv" in i_file.name and "~" not in i_file.name):
                     csv_filenames.append(basedir+i_file.name)
+                if(".dat" in i_file.name): # we changed to .dat files at some point, include them in the tarballs
+                    csv_filenames.append(basedir+i_file.name)
+                if(".log" in i_file.name): # with the change .dat, we also added log files and input files so keep those too
+                    log_filenames.append(basedir+i_file.name)
+                if("input" in i_file.name): # with the change .dat, we also added log files and input files so keep those too
+                    input_filenames.append(basedir+i_file.name)
 
 #print("README files:\n"+'\n'.join(readme_filenames))
 #print("CSV files:\n"+'\n'.join(csv_filenames))
 
 # clean up lines in README files
 readme_dict={}
+input_dict={} # keep track of the input file for each .dat file
+log_dict={} # keep track of the log file for each .dat file
 counter=0
 last_name=""
 for readme_filename in readme_filenames:
@@ -148,7 +159,19 @@ for readme_filename in readme_filenames:
 
         # clean up comment
         comment = comment.replace('\n', '')
-        comment = comment.replace(': ', '')
+        comment = comment.replace(': ', '', 1)
+
+        # in the comment we need to look for the corresponding input and log file names
+        for input_filename in input_filenames:
+            if input_filename.split('/')[-1] in comment:
+                for name in names:
+                    input_dict[name] = input_filename
+
+        for log_filename in log_filenames:
+            if log_filename.split('/')[-1] in comment:
+                for name in names:
+                    log_dict[name] = log_filename
+
         comment = add_escape_chars(comment)
 
         for name in names: # there could be more than one file referred to in each line of the README
@@ -158,6 +181,9 @@ for readme_filename in readme_filenames:
 #        if counter > 300:
 #            break
         counter=counter+1
+
+#print(input_dict)
+#print(log_dict)
 
 # print("\nMap of csv file name to README comment:")
 # counter=0
@@ -179,7 +205,7 @@ insert_sql_file.write("INSERT INTO qc.panel_hv_data_files(panel_id, filename, fi
 
 # Now go through and work out which csv files will go into a tarfile
 tarfile_dict={}
-print("\nDeciding which csv files to put in which tarball (this can take a while...)")
+print("\nDeciding which csv, dat, input, and log files to put in which tarball (this can take a while...)")
 n_csv_files=len(csv_filenames)
 counter=-1
 for i_csv_filename in csv_filenames:
@@ -295,6 +321,18 @@ for tarname in tarfile_dict.keys():
                             first_timestamp_dict[i_csv_filename] = "null"; # very old files don't have timestamp...
                 break # only want first line
 
+        # we also have dates in the comment ("daq start" and input and log files)
+        try:
+            comment = readme_dict[i_csv_filename.split('/')[-1].replace('.csv', '')]
+            found = re.search('\d{2}-\d{2}-\d{4}', comment)
+            if found != None:
+                date = datetime.strptime(found.group(), '%m-%d-%Y')
+                first_lines.append(date)
+                last_lines.append(date)
+        except KeyError:
+            date = "" # do nothing
+
+
     first_date = "YYYYMMDD" # default dates in case there are not timestamps...
     last_date = "YYYYMMDD"
     if (len(first_lines)>0):
@@ -324,12 +362,29 @@ for tarname in tarfile_dict.keys():
 #            print(i_csv_filename_mod+" was not found in README")
             comment = "was not found in README"
 
+        try:
+            input_filename = input_dict[i_csv_filename.split('/')[-1].replace('.csv', '')]
+            tarred_input_name = input_filename.split('/')[-1]
+#            print(input_filename, tarred_input_name)
+            tar.add(input_filename, arcname="hv-data/"+tarred_input_name)
+        except KeyError:
+            input_filename = "not found"            # do nothing
+
+        try:
+            log_filename = log_dict[i_csv_filename.split('/')[-1].replace('.csv', '')]
+            tarred_log_name = log_filename.split('/')[-1]
+#            print(log_filename, tarred_log_name)
+            tar.add(log_filename, arcname="hv-data/"+tarred_log_name)
+        except KeyError:
+            log_filename = "not found"            # do nothing
+
 
         if (counter > 0):
             insert_sql_file.write(",");
         insert_sql_file.write("\n(" + get_panel_id(tarname) + ", \'" + tarred_name + "\', " + first_timestamp_dict[i_csv_filename] + ", " + last_timestamp_dict[i_csv_filename] + ", \'" + tarball_filename + "\', \'" + comment + "\')")
         counter=counter+1
     tar.close()
+#    exit(1)
 
 insert_sql_file.write(";\n\nINSERT INTO qc.panel_hv_data_readmes(filename, last_modified, text) VALUES ");
 
