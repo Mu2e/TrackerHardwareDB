@@ -45,6 +45,8 @@ for basedir in basedirs:
             if (i_file.is_file()):
                 if (".swp" in i_file.name): # some system files
                     continue;
+                if ("sweep" in i_file.name): # ignore sweep.log
+                    continue;
                 if("README" in i_file.name):
                     readme_filenames.append(basedir+i_file.name)
                 if(".csv" in i_file.name and "~" not in i_file.name):
@@ -217,15 +219,34 @@ for i_csv_filename in csv_filenames:
     comment=''
     found=False
     i_csv_filename_mod = get_filename(i_csv_filename)
-# #    print(i_csv_filename+" --> "+i_csv_filename_mod)
+#    print(i_csv_filename+" --> "+i_csv_filename_mod)
     if i_csv_filename_mod == "":
         continue
 
     tarname = i_csv_filename_mod.split("_")[0]
+    tarname_found=False
     if ("mn" not in tarname) and ("MN" not in tarname):
         tarname="_".join(i_csv_filename_mod.split("_")[1:]).split("_")[0] # could have "currvstime" at start
         if ("mn" not in tarname) and ("MN" not in tarname): # if still no mn
-            continue
+            # try some other fields
+            for field in i_csv_filename_mod.split("_"):
+                if ("mn" in field) or ("MN" in field):
+                    tarname=field
+                    tarname_found=True
+                    break
+
+    if not tarname_found: # there is no "mn" or "MN" in the csv/dat filename so we will need to look it up in the readme
+        tarname = i_csv_filename_mod # we will set the tarname to the full name for the time being
+        for key in readme_dict:
+            if (tarname in readme_dict[key]):
+                if ("mn" in key) or ("MN" in key):
+                    tarname = key.split('_')[0]
+                    if ("mn" not in tarname) and ("MN" not in tarname):
+                        print("ERROR: not found the panel number")
+                        exit();
+                break
+
+#    print(tarname)
     if (".csv" in tarname):
         tarname=tarname.replace(".csv", "");
 
@@ -330,7 +351,21 @@ for tarname in tarfile_dict.keys():
                 first_lines.append(date)
                 last_lines.append(date)
         except KeyError:
-            date = "" # do nothing
+            # try .dat instead of .csv
+            for key in readme_dict:
+                if i_csv_filename.split('/')[-1] in readme_dict[key]:
+                    comment = readme_dict[key]
+                    break
+#            print(comment)
+            found = re.search('\d{4}-\d{2}-\d{2}', comment)
+            if found != None:
+                date = datetime.strptime(found.group(), '%Y-%m-%d')
+                first_lines.append(date)
+                last_lines.append(date)
+            else:
+                print("ERROR: not found a date for "+i_csv_filename)
+                date=""
+#                exit()
 
 
     first_date = "YYYYMMDD" # default dates in case there are not timestamps...
@@ -352,6 +387,7 @@ for tarname in tarfile_dict.keys():
             if "hv-data/"+tarred_name == member.name:
                 tarred_name = tarred_name.replace('.csv', '')+"_"+".csv" # just in case there are files with the same name, we want to be able to extract them all later
                 break
+        print("\t adding "+i_csv_filename+"...")
         tar.add(i_csv_filename, arcname="hv-data/"+tarred_name) # just want the csvfilename not the whole directory structure
         i_csv_filename_mod = i_csv_filename.replace('.csv', '').replace('currvstime_', '').replace('currvstime', '')
         try:
@@ -362,21 +398,67 @@ for tarname in tarfile_dict.keys():
 #            print(i_csv_filename_mod+" was not found in README")
             comment = "was not found in README"
 
+#        print(i_csv_filename)
         try:
             input_filename = input_dict[i_csv_filename.split('/')[-1].replace('.csv', '')]
             tarred_input_name = input_filename.split('/')[-1]
 #            print(input_filename, tarred_input_name)
+            print("\t adding "+input_filename+"...")
             tar.add(input_filename, arcname="hv-data/"+tarred_input_name)
         except KeyError:
-            input_filename = "not found"            # do nothing
+            # somtimes the input file names are called input_a1_YYYY-MM-DD-HH-mm.txt but the input_dict is keyed to the entry
+            # in the README, which is usually in the input filename
+            comment=""
+            for key in readme_dict:
+                if i_csv_filename.split('/')[-1] in readme_dict[key]:
+                    comment = readme_dict[key]
+                    break
+            actual_input_filename=""
+            input_file_found=False
+            for input_filename in input_filenames:
+                if input_filename.split('/')[-1].split('.')[0] in comment: # .split('.')[0] removes file type because sometimes there is a typo in the README
+                    actual_input_filename = input_filename
+                    input_file_found=True
+                    break
+                if (input_file_found):
+                    break
+            if not input_file_found:
+                print("\tCouldn't find input file for "+i_csv_filename+". Check if it was specified in README...")
+            else:
+#                exit()
+                print("\t adding "+actual_input_filename+"...")
+                tarred_input_name = actual_input_filename.split('/')[-1]
+                tar.add(actual_input_filename, arcname="hv-data/"+tarred_input_name)
 
         try:
             log_filename = log_dict[i_csv_filename.split('/')[-1].replace('.csv', '')]
             tarred_log_name = log_filename.split('/')[-1]
 #            print(log_filename, tarred_log_name)
+            print("\t adding "+log_filename+"...")
             tar.add(log_filename, arcname="hv-data/"+tarred_log_name)
         except KeyError:
-            log_filename = "not found"            # do nothing
+            # somtimes the log file names are called log_a1_YYYY-MM-DD-HH-mm.txt but the log_dict is keyed to the entry
+            # in the README, which is usually in the log filename
+            comment=""
+            for key in readme_dict:
+                if i_csv_filename.split('/')[-1] in readme_dict[key]:
+                    comment = readme_dict[key]
+                    break
+            actual_log_filename=""
+            log_file_found=False
+            for log_filename in log_filenames:
+                if log_filename.split('/')[-1].split('.')[0] in comment:
+                    actual_log_filename = log_filename
+                    log_file_found=True
+                    break
+                if (log_file_found):
+                    break
+            if not log_file_found:
+                print("\tCouldn't find log file for "+i_csv_filename+". Check if it was specified in README...")
+            else:
+                print("\t adding "+actual_log_filename+"...")
+                tarred_log_name = actual_log_filename.split('/')[-1]
+                tar.add(actual_log_filename, arcname="hv-data/"+tarred_log_name)
 
 
         if (counter > 0):
@@ -398,5 +480,7 @@ for readme_filename in readme_filenames:
     counter=counter+1
 
 print("Done!");
+print("Total Number of Files Archived = "+str(len(input_filenames) + len(csv_filenames) + len(log_filenames)))
+print("\t"+str(len(csv_filenames))+" csv/dat files, "+str(len(input_filenames))+" input files, and "+str(len(log_filenames))+" log files")
 print("Now check " + outfilename + " looks OK and then run the following command:")
 print("  psql -h ifdb08 -p 5459 mu2e_tracker_prd < " + outfilename)
