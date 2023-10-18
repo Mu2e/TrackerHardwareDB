@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from datetime import date
 
-all_columns=['missing_straws', 'high_current_wires', 'blocked_straws', 'sparking_wires', 'no_hv_straw_hv', 'no_hv_straw_cal', 'missing_omega_pieces', 'loose_omega_pieces', 'short_wires', 'missing_anode', 'missing_cathode', 'missing_wires' ]
+all_columns=['missing_straws', 'high_current_wires', 'blocked_straws', 'sparking_wires', 'no_hv_straw_hv', 'no_hv_straw_cal', 'missing_omega_pieces', 'loose_omega_pieces', 'short_wires', 'missing_anode', 'missing_cathode', 'missing_wires', 'loose_preamp_connections', 'low_anode_cathode_resistances' ]
 
 parser = argparse.ArgumentParser(
                     prog='create_update_qc_panels_table.py',
