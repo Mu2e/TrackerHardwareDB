@@ -21,7 +21,9 @@ create table qc.panels (
 	missing_wires integer[] DEFAULT '{}',
 	maxerf_risetime_filenames text[] DEFAULT '{}',
 	earboard BOOLEAN,
-	hv_test_done BOOLEAN
+	hv_test_done BOOLEAN,
+	loose_preamp_connections integer[] DEFAULT '{}',
+	low_anode_cathode_resistances integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
