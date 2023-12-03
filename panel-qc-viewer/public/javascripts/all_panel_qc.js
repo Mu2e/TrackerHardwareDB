@@ -1,5 +1,6 @@
 import { single_channel_issues } from './single_channel_issues.js'
 import { single_panel_issues, single_panel_issue_names } from './single_panel_issues.js'
+import { get_panels_in_plane } from './get_panels_in_plane.js'
 const single_ch_issues = single_channel_issues();
 const single_pan_issues = single_panel_issues();
 const single_pan_issue_names = single_panel_issue_names();
@@ -128,7 +129,7 @@ for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
     for (let i_plane = 0; i_plane < planes.length; i_plane++) {
 	n_issue[i_plane] = 0;
 	planes[i_plane] = allPlaneInfo[i_plane]['plane_id'];
-	let panels = allPlaneInfo[i_plane]['panel_ids']
+	let panels = get_panels_in_plane(allPlaneInfo[i_plane])
 	for (let i_panel = 0; i_panel < panels.length; ++i_panel){
 	    let panel_number = panels[i_panel];
 	    const panel_info = allPanelInfo[panel_num_map.get(panel_number)];
@@ -154,7 +155,7 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
     for (let i_plane = 0; i_plane < planes.length; i_plane++) {
 	vals[i_plane] = 0;
 	planes[i_plane] = allPlaneInfo[i_plane]['plane_id'];
-	let panels = allPlaneInfo[i_plane]['panel_ids']
+	let panels = get_panels_in_plane(allPlaneInfo[i_plane])
 
 	for (let i_panel = 0; i_panel < panels.length; ++i_panel){
 	    let panel_number = panels[i_panel];

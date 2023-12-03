@@ -1,5 +1,6 @@
 import { plot_panel_qc } from './panel_qc_plot.js'
 import { draw_repairs_table } from './repairs_table.js'
+import { get_panels_in_plane, get_panels_col_format } from './get_panels_in_plane.js'
 const form = document.querySelector("form");
 const log = document.querySelector("#log");
 
@@ -22,14 +23,14 @@ showPlaneButton.addEventListener('click', async function () {
 	    output += " not found!";
 	}
 	else {
-	    var panels = Array(6).fill(0);
-	    for (let i_panel = 0; i_panel < 6; ++i_panel) {
-		panels[i_panel] = plane_info[0]['panel_ids'][i_panel];
+	    var panels = get_panels_in_plane(plane_info[0]);
+	    let six_col_format = get_panels_col_format(plane_info[0]);
+	    if (panels.length == 0) {
+		output += " no panels";
 	    }
 
-	    for (let i_panel = 0; i_panel < 6; ++i_panel) {
+	    for (let i_panel = 0; i_panel < panels.length; ++i_panel) {
 		var panel_number = panels[i_panel]
-		var this_title = "Panel "+panel_number.toString();
 		
 		const response = await fetch('getPanel/'+panel_number);
 		const panel_info = await response.json();
@@ -39,9 +40,20 @@ showPlaneButton.addEventListener('click', async function () {
 		    output += " not found!";
 		}
 		else {
+		    let position="";
+		    if (six_col_format) {
+			position = "pos " + i_panel;
+			if (i_panel % 2 == 0) {
+			    position += " = top";
+			}
+			else {
+			    position += " = bottom";
+			}
+			output += " (" + position + ")";
+		    }
 		    var plot_name = 'panel'+(i_panel+1).toString()+'_plot';
 		    var straw_status_plot = document.getElementById(plot_name);
-		    var returned_output = plot_panel_qc(panel_info, straw_status_plot);
+		    var returned_output = plot_panel_qc(panel_info, straw_status_plot, position);
 		    output += returned_output + "\n\n";
 		}
 	    }
@@ -60,14 +72,11 @@ showPlaneButton.addEventListener('click', async function () {
 	// Now do the panel repairs table
 //	var cols = ["panel_id", "date_uploaded", "comment", "column_changed", "old_value", "new_value"];
 
-	var panels = Array(6).fill(0);
-	for (let i_panel = 0; i_panel < 6; ++i_panel) {
-	    panels[i_panel] = plane_info[0]['panel_ids'][i_panel];
-	}
+	var panels = get_panels_in_plane(plane_info[0]);
+	let six_col_format = get_panels_col_format(plane_info[0]);
 
-	for (let i_panel = 0; i_panel < 6; ++i_panel) {
+	for (let i_panel = 0; i_panel < panels.length; ++i_panel) {
 	    var panel_number = panels[i_panel]
-	    var this_title = "Panel "+panel_number.toString();
 		
 	    const repairs_panel_table_response = await fetch('getPanelRepairs/'+panel_number);
 	    const repairs_panel_table_info = await repairs_panel_table_response.json();
