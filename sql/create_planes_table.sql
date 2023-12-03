@@ -2,7 +2,12 @@ set role mu2e_tracker_admin;
 
 create table qc.planes (
 	plane_id integer primary key,
-	panel_ids integer[] NULL
+	panel_id_pos0 integer NULL,
+	panel_id_pos1 integer NULL,
+	panel_id_pos2 integer NULL,
+	panel_id_pos3 integer NULL,
+	panel_id_pos4 integer NULL,
+	panel_id_pos5 integer NULL
 );
 
 grant select on qc.planes to public;

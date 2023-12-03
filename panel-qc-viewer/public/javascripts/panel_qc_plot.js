@@ -1,12 +1,15 @@
 import { single_channel_issues } from './single_channel_issues.js'
 import { single_panel_issues, single_panel_issue_names } from './single_panel_issues.js'
 
-export function plot_panel_qc(panel_info, straw_status_plot) {
+export function plot_panel_qc(panel_info, straw_status_plot, position="") {
 
     const single_ch_issues = single_channel_issues(); // the rest to be added
 
     var this_panel_issues = panel_info[0]
     var this_title = "Panel "+this_panel_issues["panel_id"];
+    if (position != "") {
+	this_title += " (" + position + ")";
+    }
 
     var all_wires = Array(96).fill(0)
     var wire_numbers = Array(96).fill(0)
