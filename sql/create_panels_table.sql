@@ -23,7 +23,9 @@ create table qc.panels (
 	earboard BOOLEAN,
 	hv_test_done BOOLEAN,
 	loose_preamp_connections integer[] DEFAULT '{}',
-	low_anode_cathode_resistances integer[] DEFAULT '{}'
+	low_anode_cathode_resistances integer[] DEFAULT '{}',
+	passes_flow_test BOOLEAN,
+	earflooding_trimming_done BOOLEAN
 );
 
 grant select on qc.panels to public;

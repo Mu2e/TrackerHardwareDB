@@ -1,12 +1,15 @@
 import { single_channel_issues } from './single_channel_issues.js'
-import { has_hv_data, has_fe55_data } from './has_data_functions.js'
+import { single_panel_issues, single_panel_issue_names } from './single_panel_issues.js'
 
-export function plot_panel_qc(panel_info, straw_status_plot) {
+export function plot_panel_qc(panel_info, straw_status_plot, position="") {
 
     const single_ch_issues = single_channel_issues(); // the rest to be added
 
     var this_panel_issues = panel_info[0]
     var this_title = "Panel "+this_panel_issues["panel_id"];
+    if (position != "") {
+	this_title += " (" + position + ")";
+    }
 
     var all_wires = Array(96).fill(0)
     var wire_numbers = Array(96).fill(0)
@@ -128,29 +131,35 @@ export function plot_panel_qc(panel_info, straw_status_plot) {
 //	if (i != data.length-1) { output += ", "; }
     }
 
-    output += "\n\t Has HV data? ";
-    if (has_hv_data(this_panel_issues)) {
-	output += "yes";
-    }
-    else {
-	output += "unknown";
-    }
+    const single_pan_issues = single_panel_issues();
+    const single_pan_issue_names = single_panel_issue_names();
 
-    output += "\n\t Fe55 data: ";
-    var maxerf_risetime_filenames = this_panel_issues["maxerf_risetime_filenames"];
-    if (maxerf_risetime_filenames.length == 0) {
-	output += "none";
-    }
-    else {
-	for (let i_filename = 0; i_filename < maxerf_risetime_filenames.length; ++i_filename) {
-	    output += maxerf_risetime_filenames[i_filename];
-	    if (i_filename < maxerf_risetime_filenames.length-1) {
-		output += ", ";
+    for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
+	var issue = single_pan_issues[i_issue];
+	output += "\n\t " + single_pan_issue_names[i_issue] + " ";
+	if (this_panel_issues[issue] != null) {
+	    if (issue != 'max_erf_fit') {
+		output += this_panel_issues[issue];
 	    }
+	    else {
+		var maxerf_risetime_filenames = this_panel_issues["maxerf_risetime_filenames"];
+		if (maxerf_risetime_filenames.length == 0) {
+		    output += "none";
+		}
+		else {
+		    for (let i_filename = 0; i_filename < maxerf_risetime_filenames.length; ++i_filename) {
+			output += maxerf_risetime_filenames[i_filename];
+			if (i_filename < maxerf_risetime_filenames.length-1) {
+			    output += ", ";
+			}
+		    }
+		}
+	    }
+	}
+	else {
+	    output += "unknown";
 	}
     }
 
-    output += "\n\t Passed earboard test? ";
-    output += this_panel_issues["earboard"];
     return output;
 }
