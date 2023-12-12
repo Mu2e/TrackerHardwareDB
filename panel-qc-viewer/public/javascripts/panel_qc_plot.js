@@ -157,7 +157,17 @@ export function plot_panel_qc(panel_info, straw_status_plot, position="") {
 	    }
 	}
 	else {
-	    output += "unknown";
+	    if (issue == 'hv_test_done') { // for hv_test_done, if we have information about sparking wires etc. then we can assume the test was done even if its unknown
+		if (this_panel_issues['high_current_wires'].length != 0 ||
+		    this_panel_issues['sparking_wires'].length != 0 ||
+		    this_panel_issues['short_wires'].length != 0) {
+
+		    output += "yes";
+		}
+	    }
+	    else {
+		output += "unknown";
+	    }
 	}
     }
 

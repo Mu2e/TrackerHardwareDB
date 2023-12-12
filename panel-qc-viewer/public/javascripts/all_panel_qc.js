@@ -85,6 +85,14 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
 	    }
 	}
 	else {
+	    if (issue == 'hv_test_done') { // for hv_test_done, if we have information about sparking wires etc. then we can assume the test was done even if its unknown
+		if (allPanelInfo[i_panel]['high_current_wires'].length != 0 ||
+		    allPanelInfo[i_panel]['sparking_wires'].length != 0 ||
+		    allPanelInfo[i_panel]['short_wires'].length != 0) {
+
+		    vals[i_panel] = yes;
+		}
+	    }
 	    vals[i_panel] = unknown;
 	}
     }
@@ -177,6 +185,16 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
 		    }
 		    if (panel_info[issue] == false) {
 			fails[i_plane] += 1;
+		    }
+		}
+	    }
+	    else {
+		if (issue == 'hv_test_done') { // for hv_test_done, if we have information about sparking wires etc. then we can assume the test was done even if its unknown
+		    if (panel_info['high_current_wires'].length != 0 ||
+			panel_info['sparking_wires'].length != 0 ||
+			panel_info['short_wires'].length != 0) {
+			
+			passes[i_plane] += 1;
 		    }
 		}
 	    }
