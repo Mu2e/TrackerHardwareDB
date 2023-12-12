@@ -24,7 +24,7 @@ create table qc.panels (
 	hv_test_done BOOLEAN,
 	loose_preamp_connections integer[] DEFAULT '{}',
 	low_anode_cathode_resistances integer[] DEFAULT '{}',
-	passes_flow_test BOOLEAN,
+	passes_amb_dmb_leak_check BOOLEAN,
 	earflooding_trimming_done BOOLEAN
 );
 
