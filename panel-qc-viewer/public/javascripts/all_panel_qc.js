@@ -120,7 +120,7 @@ const allPlaneInfo = await plane_response.json();
 //console.log(allPlaneInfo)
 var planes = Array(allPlaneInfo.length)
 var single_channel_n_data_plane = Array(single_ch_issues.length)
-var single_panel_data_plane = Array(single_pan_issues.length)
+var single_panel_data_plane = Array(2*single_pan_issues.length) // 2* because pass and fail
 
 for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
     var n_issue = Array(allPlaneInfo.length);
@@ -149,11 +149,13 @@ for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
 }
 
 for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
-    var vals = Array(allPanelInfo.length);
+    var passes = Array(allPanelInfo.length);
+    var fails = Array(allPanelInfo.length);
     var issue = single_pan_issues[i_issue];
 
     for (let i_plane = 0; i_plane < planes.length; i_plane++) {
-	vals[i_plane] = 0;
+	passes[i_plane] = 0;
+	fails[i_plane] = 0;
 	planes[i_plane] = allPlaneInfo[i_plane]['plane_id'];
 	let panels = get_panels_in_plane(allPlaneInfo[i_plane])
 
@@ -163,12 +165,18 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
 	    if (panel_info[issue] != null) {
 		if (issue == 'max_erf_fit') {
 		    if (panel_info[issue].length != 0) {
-			vals[i_plane] += 1;
+			passes[i_plane] += 1;
+		    }
+		    else {
+			fails[i_plane] += 1;
 		    }
 		}
 		else {
 		    if (panel_info[issue] == true) {
-			vals[i_plane] += 1;
+			passes[i_plane] += 1;
+		    }
+		    if (panel_info[issue] == false) {
+			fails[i_plane] += 1;
 		    }
 		}
 	    }
@@ -176,12 +184,29 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
     }
 
     // Define Data
-    single_panel_data_plane[i_issue] = {name : single_pan_issue_names[i_issue],
-					x: planes,
-					y: vals,
-					mode:"markers",
-					type:"bar"
-				       }
+    let barwidth = 0.8/single_pan_issue_names.length;
+    let offset = -(barwidth/2)*single_pan_issue_names.length + (i_issue)*(barwidth);
+    single_panel_data_plane[2*i_issue] = {name : single_pan_issue_names[i_issue] + " yes",
+					  x: planes,
+					  y: passes,
+					  mode:"markers",
+					  type:"bar",
+					  text: passes.map(String),
+					  textposition: 'auto',
+					  width : barwidth,
+					  offset : offset
+					 }
+    single_panel_data_plane[2*i_issue+1] = {name : single_pan_issue_names[i_issue] + " no",
+					    x: planes,
+					    y: fails,
+					    mode:"markers",
+					    type:"bar",
+					    text: fails.map(String),
+					    textposition: 'auto',
+					    base : passes,
+					    width: barwidth,
+					    offset : offset
+					   }
 }
 
 
@@ -203,5 +228,6 @@ var yaxis = {title : {text : 'Number of panels in plane'}, tick0 : 0.0, dtick : 
 var layout = { title : {text: "Number of panels in plane that..."},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
+//	       barmode : 'stack',
 	       scroolZoom : true};
 Plotly.newPlot(has_data_vs_plane_plot, single_panel_data_plane, layout);
