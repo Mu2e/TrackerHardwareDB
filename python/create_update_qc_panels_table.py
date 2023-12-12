@@ -21,7 +21,7 @@ for column in all_columns:
     parser.add_argument('--remove_'+column, nargs='*', help='Remove these straw numbers from the '+column+' column')
 parser.add_argument('--earboard', help='True / false whether panel passed ear board test')
 parser.add_argument('--hv_test_done', help='True / false whether panel has had HV test done')
-parser.add_argument('--passes_flow_test', help='True / false whether panel passed flow test')
+parser.add_argument('--passes_amb_dmb_leak_check', help='True / false whether panel passed AMB-DMB leak check')
 parser.add_argument('--earflooding_trimming_done', help='True / false whether panel has had earflooding trimming done')
 parser.add_argument('--append', type=bool, default=False, help='Append SQL commands to previously created .sql file')
 
@@ -100,11 +100,11 @@ if (dict_args['hv_test_done'] != None):
     update_sql_file.write("WITH new_values AS (SELECT panel_id,hv_test_done from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT hv_test_done FROM new_values) WHERE repair_id=LASTVAL();\n"); # insert the new repair row with the old values
 
 
-if (dict_args['passes_flow_test'] != None):
-    update_sql_file.write("WITH old_values AS (SELECT panel_id,passes_flow_test from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,passes_flow_test FROM old_values;\n"); # insert the new repair row with the old values
-    update_sql_file.write("UPDATE qc.panels SET passes_flow_test=" + dict_args['passes_flow_test'] + " where panel_id=" + str(panel_id) + ";\n");
-    update_sql_file.write("UPDATE repairs.panels SET column_changed=\'passes_flow_test\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
-    update_sql_file.write("WITH new_values AS (SELECT panel_id,passes_flow_test from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT passes_flow_test FROM new_values) WHERE repair_id=LASTVAL();\n"); # insert the new repair row with the old values
+if (dict_args['passes_amb_dmb_leak_check'] != None):
+    update_sql_file.write("WITH old_values AS (SELECT panel_id,passes_amb_dmb_leak_check from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,passes_amb_dmb_leak_check FROM old_values;\n"); # insert the new repair row with the old values
+    update_sql_file.write("UPDATE qc.panels SET passes_amb_dmb_leak_check=" + dict_args['passes_amb_dmb_leak_check'] + " where panel_id=" + str(panel_id) + ";\n");
+    update_sql_file.write("UPDATE repairs.panels SET column_changed=\'passes_amb_dmb_leak_check\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
+    update_sql_file.write("WITH new_values AS (SELECT panel_id,passes_amb_dmb_leak_check from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT passes_amb_dmb_leak_check FROM new_values) WHERE repair_id=LASTVAL();\n"); # insert the new repair row with the old values
 
 if (dict_args['earflooding_trimming_done'] != None):
     update_sql_file.write("WITH old_values AS (SELECT panel_id,earflooding_trimming_done from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,earflooding_trimming_done FROM old_values;\n"); # insert the new repair row with the old values
