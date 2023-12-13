@@ -25,7 +25,8 @@ create table qc.panels (
 	loose_preamp_connections integer[] DEFAULT '{}',
 	low_anode_cathode_resistances integer[] DEFAULT '{}',
 	passes_amb_dmb_leak_check BOOLEAN,
-	earflooding_trimming_done BOOLEAN
+	earflooding_trimming_done BOOLEAN,
+	air_test_for_straw_blockage_done BOOLEAN
 );
 
 grant select on qc.panels to public;

@@ -23,6 +23,7 @@ parser.add_argument('--earboard', help='True / false whether panel passed ear bo
 parser.add_argument('--hv_test_done', help='True / false whether panel has had HV test done')
 parser.add_argument('--passes_amb_dmb_leak_check', help='True / false whether panel passed AMB-DMB leak check')
 parser.add_argument('--earflooding_trimming_done', help='True / false whether panel has had earflooding trimming done')
+parser.add_argument('--air_test_for_straw_blockage_done', help='True / false whether panel has had the air test for straw blockage done')
 parser.add_argument('--append', type=bool, default=False, help='Append SQL commands to previously created .sql file')
 
 args = parser.parse_args()
@@ -111,6 +112,12 @@ if (dict_args['earflooding_trimming_done'] != None):
     update_sql_file.write("UPDATE qc.panels SET earflooding_trimming_done=" + dict_args['earflooding_trimming_done'] + " where panel_id=" + str(panel_id) + ";\n");
     update_sql_file.write("UPDATE repairs.panels SET column_changed=\'earflooding_trimming_done\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
     update_sql_file.write("WITH new_values AS (SELECT panel_id,earflooding_trimming_done from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT earflooding_trimming_done FROM new_values) WHERE repair_id=LASTVAL();\n"); # insert the new repair row with the old values
+
+if (dict_args['air_test_for_straw_blockage_done'] != None):
+    update_sql_file.write("WITH old_values AS (SELECT panel_id,air_test_for_straw_blockage_done from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,air_test_for_straw_blockage_done FROM old_values;\n"); # insert the new repair row with the old values
+    update_sql_file.write("UPDATE qc.panels SET air_test_for_straw_blockage_done=" + dict_args['air_test_for_straw_blockage_done'] + " where panel_id=" + str(panel_id) + ";\n");
+    update_sql_file.write("UPDATE repairs.panels SET column_changed=\'air_test_for_straw_blockage_done\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
+    update_sql_file.write("WITH new_values AS (SELECT panel_id,air_test_for_straw_blockage_done from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT air_test_for_straw_blockage_done FROM new_values) WHERE repair_id=LASTVAL();\n"); # insert the new repair row with the old values
 
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")
