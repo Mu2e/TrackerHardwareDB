@@ -9,6 +9,10 @@ var yes = 1.0;
 var no = 0.5;
 var unknown = 0;
 
+let colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', 'black', 'navy', 'olive' ];
+
+let yes_no_colors = ['blue', 'red', 'lightblue', 'pink', 'darkblue', 'darkred', 'aquamarine', 'crimson', 'midnightblue', 'darksalmon', 'powderblue', 'mediumvioletred']//#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', 'black', 'navy', 'olive' ];;//['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', 'green', 'red', 'lightgreen', 'lightred', 'darkgreen', 'darkred', 'white', 'black'];
+
 
 //
 // All Panels Plot
@@ -57,7 +61,8 @@ var layout = { title : {text: "All Issues vs Panel Number"},
 	       yaxis : yaxis,
 	       scroolZoom : true,
 	       barmode : "stack",
-	       shapes: [ {type: 'line', x0: 0, y0: 5.0, x1: highest_panel_id, y1: 5.0, line:{ color: 'rgb(0, 0, 0)', width: 4, dash:'dot'} } ]
+	       shapes: [ {type: 'line', x0: 0, y0: 5.0, x1: highest_panel_id, y1: 5.0, line:{ color: 'rgb(0, 0, 0)', width: 4, dash:'dot'} } ],
+	       colorway : colors
 	     };
 Plotly.newPlot(single_channel_issue_vs_panel_plot, single_channel_n_data, layout);
 
@@ -115,8 +120,9 @@ var yaxis = {title : {text : ''},
 var layout = { title : {text: "Yes / No / Unknown Questions"},
  	       xaxis : xaxis,
  	       yaxis : yaxis,
- 	       scroolZoom : true };
-
+ 	       scroolZoom : true,
+	       colorway : yes_no_colors
+	     };
 Plotly.newPlot(has_data_vs_panel_plot, single_panel_data, layout);
 
 ////
@@ -236,16 +242,25 @@ var layout = { title : {text: "All Issues vs Plane Number"},
 	       yaxis : yaxis,
 	       scroolZoom : true,
 	       barmode : 'stack',
-	       shapes: [ {type: 'line', x0: 0, y0: 30.0, x1: planes.length, y1: 30.0, line:{ color: 'rgb(0, 0, 0)', width: 4, dash:'dot'} } ]
+	       shapes: [ {type: 'line', x0: 0, y0: 30.0, x1: planes.length, y1: 30.0, line:{ color: 'rgb(0, 0, 0)', width: 4, dash:'dot'} } ],
+	       colorway : colors
 	     };
 Plotly.newPlot(single_channel_issue_vs_plane_plot, single_channel_n_data_plane, layout);
 
 var has_data_vs_plane_plot = document.getElementById('has_data_vs_plane_plot');
-var xaxis = {title : {text : 'plane number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0, gridwidth : 2};
+var xaxis = {title : {text : 'plane number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0};
 var yaxis = {title : {text : 'Number of panels in plane'}, tick0 : 0.0, dtick : 1, range : [0, 7] };
+
+let better_grid_lines = Array(planes.length+1);
+for (let i_grid_line = 0; i_grid_line < better_grid_lines.length; ++i_grid_line) {
+    better_grid_lines[i_grid_line] = {type: 'line', x0: -0.5 + i_grid_line, y0: 0.0, x1: -0.5 + i_grid_line, y1: 7, line:{ color: 'rgba(0, 0, 0, 0.1)', width: 2} };
+}
 var layout = { title : {text: "Number of panels in plane that..."},
 	       xaxis : xaxis,
 	       yaxis : yaxis,
 //	       barmode : 'stack',
-	       scroolZoom : true};
+	       scroolZoom : true,
+	       shapes: better_grid_lines,
+	       colorway : yes_no_colors
+	     };
 Plotly.newPlot(has_data_vs_plane_plot, single_panel_data_plane, layout);
