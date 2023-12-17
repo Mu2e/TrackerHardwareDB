@@ -18,19 +18,19 @@ parser.add_argument('--min_panel_id', type=int, default=1)
 args = parser.parse_args()
 snapshot_date = args.snapshot_date
 
-cols_to_extract = {'Missing_straws': 'missing_straws',
-                   'Missing_wires': 'missing_wires',
-                   'High_currents' : 'high_current_wires',
-                   'Blocked_straws' : 'blocked_straws',
-                   'Sparks' : 'sparking_wires',
-                   'Brooken_wires' : 'broken_wires',
+cols_to_extract = {#'Missing_straws': 'missing_straws',
+#                   'Missing_wires': 'missing_wires',
+#                   'High_currents' : 'high_current_wires',
+#                   'Blocked_straws' : 'blocked_straws',
+#                   'Sparks' : 'sparking_wires',
+#                   'Brooken_wires' : 'broken_wires',
 #                   'Loose_anode_pin' : # no column in db for this
 #                   'Loose_cathode_pins' : # no column in db for this
 #                   'Loose_omegas' : 'missing_omega_pieces', # loose omega piaces are now the same as missing omega pieces
                    'Missing_anode_pins' : 'missing_anode',
                    'Missing_cathode_pins' : 'missing_cathode',
                    'Missing_omegas' : 'missing_omega_pieces',
-                   'Shorts' : 'short_wires',
+#                   'Shorts' : 'short_wires',
                    'Plane_number' : 'tbd'}
 
 cols_to_check = [ 'Loose_omega', 'Notes', 'HV_issues', 'HV_test_done', 'Repairs', 'Air_test_for_blocked_straws' ] # move Loose_omega to just a thing we should check
@@ -73,7 +73,7 @@ for panel_id in np.linspace(min_panel_id, max_panel_id, num=(max_panel_id-min_pa
         panel_commands=[]
         panel_commands_added = False
 
-        base_plane_command = "python3 create_update_qc_planes_table.py --append true"
+        base_plane_command = "python3 create_update_qc_planes_table_old.py --append true"
         plane_commands_added = False
         print("\nExtracting lists of integers from FNAL Plane DB files that should contain them...")
         for col in cols_to_extract:
