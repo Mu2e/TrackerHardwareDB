@@ -1,6 +1,8 @@
 import { plot_panel_qc } from './panel_qc_plot.js'
 import { draw_repairs_table } from './repairs_table.js'
 import { get_panels_in_plane, get_panels_col_format } from './get_panels_in_plane.js'
+import { stdDev } from "./stats.js"
+
 const form = document.querySelector("form");
 const log = document.querySelector("#log");
 
@@ -61,13 +63,12 @@ showPlaneButton.addEventListener('click', async function () {
 	    
 	document.getElementById("plane_info").innerHTML = output;
 
+
 	// Now do the plane repairs table
 	const repairs_table_response = await fetch('getPlaneRepairs/'+plane_number);
 	const repairs_table_info = await repairs_table_response.json();
 	var over_table = document.getElementById("plane_repairs_table");
 	draw_repairs_table(repairs_table_info, over_table);
-
-
 
 	// Now do the panel repairs table
 //	var cols = ["panel_id", "date_uploaded", "comment", "column_changed", "old_value", "new_value"];
@@ -86,6 +87,46 @@ showPlaneButton.addEventListener('click', async function () {
 	    }
 	    draw_repairs_table(repairs_panel_table_info, over_panel_table, 'panel_id');
 	}
+
+	// Now make the measurement plots
+	const height_response = await fetch('getPlaneMeasurements/heights/'+plane_number);
+	const height_measurements = await height_response.json();
+	if (height_measurements.length != 0) {
+//	    console.log(height_measurements);
+	    //	console.log(stdDev(heights));
+	    let heights = Array();
+	    let first_date = height_measurements[0]['date_taken']
+	    for (let i_height_measurement = 0; i_height_measurement < height_measurements.length; ++i_height_measurement) {
+		if (height_measurements[i_height_measurement]['date_taken'] != first_date) {
+		    break;
+		}
+		heights.push(height_measurements[i_height_measurement]['height_inches']);
+	    }
+	    var height_measurements_data = {name : "Plane " + plane_number + " Height Measurements",
+					    x: heights,
+					    //					    y: vals,
+					    type:"histogram",
+					    xbins : { start : -0.02, end : 0.02, size : 0.001}
+					   }
+	    
+	    var height_measurement_plot = document.getElementById("height_measurement_plot");
+	    var xaxis = {title : {text : 'planarity [inches]'}, tickmode : "linear", tick0 : -0.02, dtick : 0.001, gridwidth : 2};
+	    //	var yaxis = {title : {text : 'no. of channels with issues'}};
+	    var layout = { title : {text: "Most Recent Height Measurements (from " + first_date + ")"},
+			   xaxis : xaxis,
+			   //		       yaxis : yaxis,
+		       scroolZoom : true,
+			   //		       showlegend : true,
+			   //		       barmode : 'stack',
+//		       shapes: [ {type: 'line', x0: 0, y0: 30.0, x1: planes.length, y1: 30.0, line:{ color: 'rgb(0, 0, 0)', width: 4, dash:'dot'} } ]
+			   annotations : [{ xref : 'paper', yref : 'paper', x : 0.5, y : 1, showarrow : false,
+					    text : 'Std Dev = ' + stdDev(heights).toFixed(4) + ' inches', 
+					    font : { size : 16 } 
+					  }]
+			 };
+	    Plotly.newPlot(height_measurement_plot, [height_measurements_data], layout);
+	}
+
     }
     else {
 	output = "Input must be a number";
