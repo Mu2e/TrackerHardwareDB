@@ -92,7 +92,7 @@ showPlaneButton.addEventListener('click', async function () {
 	let measurement_output = "Plane Measurements\n";
 	measurement_output += "==================\n"
 
-	const height_response = await fetch('getPlaneMeasurements/heights/'+plane_number);
+	const height_response = await fetch('getMeasurements/plane/heights/'+plane_number);
 	const height_measurements = await height_response.json();
 	if (height_measurements.length != 0) {
 	    measurement_output += "\nHeight Measurements: see plot\n";
@@ -134,7 +134,7 @@ showPlaneButton.addEventListener('click', async function () {
 	    measurement_output += "\nHeight Measurements: none found\n";
 	}
 
-	const pin_response = await fetch('getPlaneMeasurements/pins/'+plane_number);
+	const pin_response = await fetch('getMeasurements/plane/pins/'+plane_number);
 	const pin_measurements = await pin_response.json();
 	if (pin_measurements.length != 0) {
 	    let first_date = pin_measurements[0]['date_taken']
@@ -160,7 +160,7 @@ showPlaneButton.addEventListener('click', async function () {
 	    measurement_output += "\nPin-to-Pin Measurements: none found\n";
 	}
 
-	const gap_response = await fetch('getPlaneMeasurements/gaps/'+plane_number);
+	const gap_response = await fetch('getMeasurements/plane/gaps/'+plane_number);
 	const gap_measurements = await gap_response.json();
 	if (gap_measurements.length != 0) {
 	    let first_date = gap_measurements[0]['date_taken']
