@@ -20,11 +20,14 @@ showPlaneButton.addEventListener('click', async function () {
 	// 							  2);
 
 	// Fill with DUMMY data for the time being
-	output = "Plane "+plane_number+":\n";
+	output = "Plane "+plane_number;
 	if (plane_info.length==0) {
 	    output += " not found!";
 	}
 	else {
+	    output += " (constructed: " + plane_info[0]['construction_start_date'] + " - " + plane_info[0]['construction_end_date'] + ")\n";
+	    output += "\n"
+
 	    var panels = get_panels_in_plane(plane_info[0]);
 	    let six_col_format = get_panels_col_format(plane_info[0]);
 	    if (panels.length == 0) {
