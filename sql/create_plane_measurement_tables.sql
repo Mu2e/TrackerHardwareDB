@@ -28,5 +28,16 @@ create table measurements.plane_pins (
 grant select on measurements.plane_pins to public;
 grant insert on measurements.plane_pins to mu2e_tracker_admin;
 
+create table measurements.plane_gaps (
+       gap_measurement_id SERIAL primary key,
+	plane_id integer,
+	panel_id integer,
+	gap_ccw_mm float,
+	date_taken date
+);
+
+grant select on measurements.plane_gaps to public;
+grant insert on measurements.plane_gaps to mu2e_tracker_admin;
+
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA measurements TO mu2e_tracker_admin;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA measurements TO mu2e_tracker_writer;
