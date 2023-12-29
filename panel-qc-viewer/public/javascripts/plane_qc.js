@@ -134,30 +134,30 @@ showPlaneButton.addEventListener('click', async function () {
 	    measurement_output += "\nHeight Measurements: none found\n";
 	}
 
-	const gap_response = await fetch('getPlaneMeasurements/gaps/'+plane_number);
-	const gap_measurements = await gap_response.json();
-	if (gap_measurements.length != 0) {
-	    let first_date = gap_measurements[0]['date_taken']
+	const pin_response = await fetch('getPlaneMeasurements/pins/'+plane_number);
+	const pin_measurements = await pin_response.json();
+	if (pin_measurements.length != 0) {
+	    let first_date = pin_measurements[0]['date_taken']
 
-	    let nominal_gap = 0.187;
-	    measurement_output += "\nGap Measurements (from " + first_date + ", nominal = " + nominal_gap + "\"):\n";
+	    let nominal_pin = 0.187;
+	    measurement_output += "\nPin-to-Pin Measurements (from " + first_date + ", nominal = " + nominal_pin + "\"):\n";
 	    let total_nominal_diff = 0;
-	    let total_gaps = 0;
-	    for (let i_gap_measurement = 0; i_gap_measurement < gap_measurements.length; ++i_gap_measurement) {
-		if (gap_measurements[i_gap_measurement]['date_taken'] != first_date) {
+	    let total_pins = 0;
+	    for (let i_pin_measurement = 0; i_pin_measurement < pin_measurements.length; ++i_pin_measurement) {
+		if (pin_measurements[i_pin_measurement]['date_taken'] != first_date) {
 		    break;
 		}
-		let gap_inches = gap_measurements[i_gap_measurement]["gap_inches"];
-		let nominal_diff = gap_inches - nominal_gap;
+		let pin_inches = pin_measurements[i_pin_measurement]["pin_inches"];
+		let nominal_diff = pin_inches - nominal_pin;
 		total_nominal_diff  += nominal_diff;
-		total_gaps++;
-		measurement_output += gap_measurements[i_gap_measurement]['top_panel_id'] + " - " + gap_measurements[i_gap_measurement]['bottom_panel_id'] + " (pos. " + gap_measurements[i_gap_measurement]['gap_position'] + ") = " +  gap_inches + "\" (" +  nominal_diff.toFixed(3) + "\" from nominal)\n"
+		total_pins++;
+		measurement_output += pin_measurements[i_pin_measurement]['top_panel_id'] + " - " + pin_measurements[i_pin_measurement]['bottom_panel_id'] + " (pos. " + pin_measurements[i_pin_measurement]['pin_position'] + ") = " +  pin_inches + "\" (" +  nominal_diff.toFixed(3) + "\" from nominal)\n"
 	    }
-	    let mean_nominal_diff = total_nominal_diff / total_gaps;
+	    let mean_nominal_diff = total_nominal_diff / total_pins;
 	    measurement_output += "Mean diff. from nominal = " + mean_nominal_diff.toFixed(3) + "\"\n"
 	}
 	else {
-	    measurement_output += "\nGap Measurements: none found\n";
+	    measurement_output += "\nPin-to-Pin Measurements: none found\n";
 	}
 
 	document.getElementById("measurement_info").innerHTML = measurement_output;

@@ -7,7 +7,7 @@ import pandas as pd
 from datetime import date
 
 measurements={ 'heights' : ["phi_location_deg", "height_inches"],
-               'gaps' : ["top_panel_id", "bottom_panel_id", "gap_position", "gap_inches"]}
+               'pins' : ["top_panel_id", "bottom_panel_id", "pin_position", "pin_inches"]}
 
 parser = argparse.ArgumentParser(
                     prog='create_insert_plane_measurements.py',
