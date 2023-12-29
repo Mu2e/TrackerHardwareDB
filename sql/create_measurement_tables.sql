@@ -39,5 +39,17 @@ create table measurements.plane_gaps (
 grant select on measurements.plane_gaps to public;
 grant insert on measurements.plane_gaps to mu2e_tracker_admin;
 
+create table measurements.panel_leaks (
+       leak_measurement_id SERIAL primary key,
+	panel_id integer,
+	leak_sccm float,
+	comment text,
+	date_taken date
+);
+
+
+grant select on measurements.panel_leaks to public;
+grant insert on measurements.panel_leaks to mu2e_tracker_admin;
+
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA measurements TO mu2e_tracker_admin;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA measurements TO mu2e_tracker_writer;

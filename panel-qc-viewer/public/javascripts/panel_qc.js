@@ -32,9 +32,27 @@ showPanelButton.addEventListener('click', async function () {
     else {
 	output = "Input must be a number";
     }
-	    
+
     document.getElementById("panel_info").innerHTML = output;
 
+    // Now make the measurement plots
+    let panel_leak_budget = 0.014;
+    let measurement_output = "Leak Measurements (panel leak budget: " + panel_leak_budget + " sccm)\n";
+    measurement_output += "=================================================\n"
+    const leak_response = await fetch('getMeasurements/panel/leaks/'+panel_number);
+    const leak_measurements = await leak_response.json();
+    if (leak_measurements.length != 0) {
+	for (let i_leak_measurement = 0; i_leak_measurement < leak_measurements.length; ++i_leak_measurement) {
+	    let leak_sccm = leak_measurements[i_leak_measurement]["leak_sccm"];
+	    let frac_of_budget = (leak_sccm / panel_leak_budget)*100;
+	    measurement_output += leak_measurements[i_leak_measurement]['date_taken'] + " (" + leak_measurements[i_leak_measurement]['comment'] + ") = " +  leak_sccm.toFixed(4) + " sccm (" + frac_of_budget.toFixed(1) + "% of panel leak budget)\n";
+	}
+    }
+    else {
+	measurement_output += "\nLeak Measurements: none found\n";
+    }
+    document.getElementById("measurement_info").innerHTML = measurement_output;
+    
     // Now do the table
 
     if (!isNaN(panel_number)) {

@@ -178,6 +178,31 @@ showPlaneButton.addEventListener('click', async function () {
 	    measurement_output += "\nGap Measurements: none found\n";
 	}
 
+	measurement_output += "\nLeak Measurements:\n";
+	let panel_leak_budget = 0.014;
+	let plane_leak_budget = panel_leak_budget*6;
+	measurement_output += "(panel leak budget: " + panel_leak_budget + " sccm, plane leak budget: " + plane_leak_budget + " sccm)\n";
+	var panels = get_panels_in_plane(plane_info[0]);
+	let plane_leak_sccm = 0;
+	for (let i_panel = 0; i_panel < panels.length; ++i_panel) {
+	    let panel_number = panels[i_panel];
+	    const leak_response = await fetch('getMeasurements/panel/leaks/'+panel_number);
+	    const leak_measurements = await leak_response.json();
+	    if (leak_measurements.length != 0) {
+		// Only take most recent leak measurement
+		let leak_sccm = leak_measurements[0]["leak_sccm"];
+		plane_leak_sccm += leak_sccm;
+//		let frac_of_budget = (leak_sccm / panel_leak_budget)*100;
+		measurement_output += panel_number + ": " + leak_measurements[0]['date_taken'] + " (" + leak_measurements[0]['comment'] + ") = " +  leak_sccm.toFixed(4) + " sccm\n";// (" + frac_of_budget.toFixed(1) + "% of panel leak budget)\n";
+	    }
+	    else {
+		measurement_output += panel_number + ": none found\n";
+	    }
+	}
+	let frac_of_plane_budget = (plane_leak_sccm / plane_leak_budget)*100;
+	measurement_output += "Plane Leak Rate = " + plane_leak_sccm.toFixed(4) + " sccm (" + frac_of_plane_budget.toFixed(1) + "% of plane leak budget)\n";
+
+
 	document.getElementById("measurement_info").innerHTML = measurement_output;
 
     }
