@@ -89,9 +89,13 @@ showPlaneButton.addEventListener('click', async function () {
 	}
 
 	// Now make the measurement plots
+	let measurement_output = "Plane Measurements\n";
+	measurement_output += "==================\n"
+
 	const height_response = await fetch('getPlaneMeasurements/heights/'+plane_number);
 	const height_measurements = await height_response.json();
 	if (height_measurements.length != 0) {
+	    measurement_output += "\nHeight Measurements: see plot\n";
 //	    console.log(height_measurements);
 	    //	console.log(stdDev(heights));
 	    let heights = Array();
@@ -126,6 +130,37 @@ showPlaneButton.addEventListener('click', async function () {
 			 };
 	    Plotly.newPlot(height_measurement_plot, [height_measurements_data], layout);
 	}
+	else {
+	    measurement_output += "\nHeight Measurements: none found\n";
+	}
+
+	const gap_response = await fetch('getPlaneMeasurements/gaps/'+plane_number);
+	const gap_measurements = await gap_response.json();
+	if (gap_measurements.length != 0) {
+	    let first_date = gap_measurements[0]['date_taken']
+
+	    let nominal_gap = 0.187;
+	    measurement_output += "\nGap Measurements (from " + first_date + ", nominal = " + nominal_gap + "\"):\n";
+	    let total_nominal_diff = 0;
+	    let total_gaps = 0;
+	    for (let i_gap_measurement = 0; i_gap_measurement < gap_measurements.length; ++i_gap_measurement) {
+		if (gap_measurements[i_gap_measurement]['date_taken'] != first_date) {
+		    break;
+		}
+		let gap_inches = gap_measurements[i_gap_measurement]["gap_inches"];
+		let nominal_diff = gap_inches - nominal_gap;
+		total_nominal_diff  += nominal_diff;
+		total_gaps++;
+		measurement_output += gap_measurements[i_gap_measurement]['top_panel_id'] + " - " + gap_measurements[i_gap_measurement]['bottom_panel_id'] + " (pos. " + gap_measurements[i_gap_measurement]['gap_position'] + ") = " +  gap_inches + "\" (" +  nominal_diff.toFixed(3) + "\" from nominal)\n"
+	    }
+	    let mean_nominal_diff = total_nominal_diff / total_gaps;
+	    measurement_output += "Mean diff. from nominal = " + mean_nominal_diff.toFixed(3) + "\"\n"
+	}
+	else {
+	    measurement_output += "\nGap Measurements: none found\n";
+	}
+
+	document.getElementById("measurement_info").innerHTML = measurement_output;
 
     }
     else {
