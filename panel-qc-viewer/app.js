@@ -51,6 +51,10 @@ app.use('/fnal_plane_db', require('./routes/fnal_plane_db'));
 app.use('/getEarBoard', require('./db/getEarBoard'));
 app.use('/earboard', require('./routes/earboard'));
 
+app.use('/drac', require('./routes/drac'));
+app.use('/getDracTests', require('./db/getDracTests'));
+app.use('/getDracROCConfigs', require('./db/getDracROCConfigs'));
+
 
 
 // catch 404 and forward to error handler
