@@ -1,3 +1,28 @@
+///////////////////////////////
+// DRAC TEST RESULT PLOT
+//
+const showDracButton = document.getElementById('btnShowDrac');
+showDracButton.addEventListener('click', async function () {
+    var drac_id = document.getElementById('drac_id').value;
+    const response = await fetch('getDracTests/'+drac_id);
+    const drac_info = await response.json();
+    console.log(drac_info);
+
+    drac_test_plot = document.getElementById('drac_test_plot');
+    var data = Array(drac_info.length);
+    for (let i_drac_test = 0; i_drac_test < drac_info.length; ++i_drac_test) {
+	var this_data = {
+	    name : 'panel '+drac_info[i_drac_test]['panel_id'] + " (test_id = "+drac_info[i_drac_test]['drac_test_id']+")",
+	    type : 'scatter',
+//	    x: wire_numbers,
+	    y: drac_info[i_drac_test]['pulser_total_hv']
+	};
+	data[i_drac_test] = this_data;
+    }
+
+    var layout = { title : {text: "DRAC " + drac_id + " Pulser HV (total)"} }
+    Plotly.newPlot(drac_test_plot, data, layout);	    
+});
 
 ///////////////////////////////
 // DRAC TEST TABLE
