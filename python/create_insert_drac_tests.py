@@ -153,18 +153,23 @@ board_status = data['BoardStatus']
 board_status_values=[]
 for json_field in board_status_dict:
     board_status_values.append(str(board_status[json_field]))
+
+
+# Get the pulser results
+pulser_rates = data['PulserRates']
+pulser_total_hv = "\'{";
+n_channels = 96;
+for i_channel in range(0, n_channels):
+    pulser_total_hv += str(pulser_rates[str(i_channel)]["TotalHV"]);
+    if i_channel != n_channels-1:
+        pulser_total_hv += ", "
+pulser_total_hv += "}\'"
+
+
 # Now insert the data
-insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+','.join(board_status_dict.values())+") VALUES\n")
-insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+','.join(board_status_values)+");")
+insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv) VALUES\n")
+insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+");")
 
-
-for field in board_status:
-    print(field, board_status[field])
-
-# pulser_rates = data['PulserRates']
-# for channel in pulser_rates:
-#     for count in pulser_rates[channel]:
-#         print(channel, count, pulser_rates[channel][count])
 
 # deltat_rms = data['deltatRMS']
 # for channel,i_deltat_rms in enumerate(deltat_rms):
