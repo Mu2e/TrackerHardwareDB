@@ -31,12 +31,29 @@ create table drac.cal_configs (
 grant select on drac.cal_configs to public;
 grant insert on drac.cal_configs to mu2e_tracker_admin;
 
+create table drac.hv_configs (
+       hv_config_id SERIAL primary key,
+        id_read varchar, 
+	silsig varchar, 
+	design_name varchar, 
+	checksum varchar,
+	design_info varchar,
+	design_ver varchar,
+	back_level varchar,
+	debug_info varchar,
+	dsn varchar,
+	UNIQUE(id_read, silsig, design_name, checksum, design_info, design_ver, back_level, debug_info, dsn)
+);
+grant select on drac.hv_configs to public;
+grant insert on drac.hv_configs to mu2e_tracker_admin;
+
 create table drac.test_results (
        drac_test_id SERIAL primary key,
        drac_id varchar,
        panel_id int,
        roc_config_id int,
-       cal_config_id int
+       cal_config_id int,
+       hv_config_id int
 );
 grant select on drac.test_results to public;
 grant insert on drac.test_results to mu2e_tracker_admin;

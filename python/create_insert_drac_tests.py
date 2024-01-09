@@ -68,10 +68,9 @@ insert_sql_file.write(')\n')
 insert_sql_file.write('ON CONFLICT (device_serial,design_info,design_ver,back_level_ver) DO NOTHING;\n') # this line means it won't insert this row if an identical row already exists
 
 # CAL configuration
-insert_sql_file.write('INSERT INTO drac.cal_configs(id_read, silsig, design_name, checksum, design_info, design_ver, back_level, debug_info, dsn) VALUES\n')
+insert_sql_file.write('\nINSERT INTO drac.cal_configs(id_read, silsig, design_name, checksum, design_info, design_ver, back_level, debug_info, dsn) VALUES\n')
 cal_config = data['CAL']
 for field in cal_config:
-#    print(field, cal_config[field])
     cal_config[field] = cal_config[field][1:] # remove the '\u' character from the values
 insert_sql_file.write('(\''+cal_config['ID read']+ '\', ')
 insert_sql_file.write('\''+cal_config['SILSIG'] + '\', ')
@@ -85,17 +84,32 @@ insert_sql_file.write('\''+cal_config['DSN'] + '\'')
 insert_sql_file.write(')\n')
 insert_sql_file.write('ON CONFLICT (id_read, silsig, design_name, checksum, design_info, design_ver, back_level, debug_info, dsn) DO NOTHING;\n') # this line means it won't insert this row if an identical row already exists
 
+# HV configuration
+insert_sql_file.write('\nINSERT INTO drac.hv_configs(id_read, silsig, design_name, checksum, design_info, design_ver, back_level, debug_info, dsn) VALUES\n')
+hv_config = data['HV']
+for field in hv_config:
+    hv_config[field] = hv_config[field][1:] # remove the '\u' character from the values
+insert_sql_file.write('(\''+hv_config['ID read']+ '\', ')
+insert_sql_file.write('\''+hv_config['SILSIG'] + '\', ')
+insert_sql_file.write('\''+hv_config['Design Name'] + '\', ')
+insert_sql_file.write('\''+hv_config['Checksum'] + '\', ')
+insert_sql_file.write('\''+hv_config['Design Info'] + '\', ')
+insert_sql_file.write('\''+hv_config['DESIGNVER'] + '\', ')
+insert_sql_file.write('\''+hv_config['BACKLEVEL'] + '\', ')
+insert_sql_file.write('\''+hv_config['Debug Info'] + '\', ')
+insert_sql_file.write('\''+hv_config['DSN'] + '\'')
+insert_sql_file.write(')\n')
+insert_sql_file.write('ON CONFLICT (id_read, silsig, design_name, checksum, design_info, design_ver, back_level, debug_info, dsn) DO NOTHING;\n') # this line means it won't insert this row if an identical row already exists
+
 
 roc_config_id_select="(SELECT roc_config_id from drac.roc_configs where device_serial=\'"+roc_config['DeviceSerial']+"\' and design_info=\'"+roc_config['DesignInfo']+"\' and design_ver=\'"+roc_config['DesignVer']+"\' and back_level_ver=\'"+roc_config['BackLevelVer']+"\')"
 # Test results
 cal_config_id_select="(SELECT cal_config_id from drac.cal_configs where id_read=\'"+cal_config['ID read']+"\' and silsig=\'"+cal_config['SILSIG']+"\' and design_name=\'"+cal_config['Design Name']+"\' and checksum=\'"+cal_config['Checksum']+"\' and design_info=\'"+cal_config['Design Info']+"\' and design_ver=\'"+cal_config['DESIGNVER']+"\' and back_level=\'"+cal_config['BACKLEVEL']+"\' and debug_info=\'"+cal_config['Debug Info']+"\' and dsn=\'"+cal_config['DSN']+"\')"
+hv_config_id_select="(SELECT hv_config_id from drac.hv_configs where id_read=\'"+hv_config['ID read']+"\' and silsig=\'"+hv_config['SILSIG']+"\' and design_name=\'"+hv_config['Design Name']+"\' and checksum=\'"+hv_config['Checksum']+"\' and design_info=\'"+hv_config['Design Info']+"\' and design_ver=\'"+hv_config['DESIGNVER']+"\' and back_level=\'"+hv_config['BACKLEVEL']+"\' and debug_info=\'"+hv_config['Debug Info']+"\' and dsn=\'"+hv_config['DSN']+"\')"
 # Test results
-insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id) VALUES\n")
-insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+");")
+insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id) VALUES\n")
+insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+");")
 
-# hv_config = data['HV']
-# for field in hv_config:
-#     print(field, hv_config[field])
 
 # board_status = data['BoardStatus']
 # for field in board_status:
