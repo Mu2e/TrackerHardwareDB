@@ -99,7 +99,8 @@ create table drac.test_results (
        pulser_total_time_counts integer[],
        pulser_rate_hv_Hz real[],
        pulser_rate_cal_Hz real[],
-       pulser_rate_coinc_Hz real[]
+       pulser_rate_coinc_Hz real[],
+       delta_t_rms real[]
 );
 grant select on drac.test_results to public;
 grant insert on drac.test_results to mu2e_tracker_admin;

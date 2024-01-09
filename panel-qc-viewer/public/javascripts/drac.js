@@ -15,12 +15,12 @@ showDracButton.addEventListener('click', async function () {
 	    name : 'panel '+drac_info[i_drac_test]['panel_id'] + " (test_id = "+drac_info[i_drac_test]['drac_test_id']+")",
 	    type : 'scatter',
 //	    x: wire_numbers,
-	    y: drac_info[i_drac_test]['pulser_total_hv']
+	    y: drac_info[i_drac_test]['delta_t_rms']
 	};
 	data[i_drac_test] = this_data;
     }
 
-    var layout = { title : {text: "DRAC " + drac_id + " Pulser HV (total)"} }
+    var layout = { title : {text: "DRAC " + drac_id + " Delta tRMS"} }
     Plotly.newPlot(drac_test_plot, data, layout);	    
 });
 

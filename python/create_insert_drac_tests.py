@@ -189,15 +189,16 @@ pulser_rate_hv += "}\'"
 pulser_rate_cal += "}\'"
 pulser_rate_coinc += "}\'"
 
+# Get the delta tRMS results
+delta_t_rms=[]
+for i_delta_t_rms in data['deltatRMS']:
+    delta_t_rms.append(str(i_delta_t_rms))
 
 # Now insert the data
-insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv, pulser_total_cal, pulser_total_coinc, pulser_total_time_counts, pulser_rate_hv_Hz, pulser_rate_cal_Hz, pulser_rate_coinc_Hz) VALUES\n")
-insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+", "+pulser_total_cal+", "+pulser_total_coinc+", "+pulser_total_time_counts+", "+pulser_rate_hv+", "+pulser_rate_cal+", "+pulser_rate_coinc+");")
+insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv, pulser_total_cal, pulser_total_coinc, pulser_total_time_counts, pulser_rate_hv_Hz, pulser_rate_cal_Hz, pulser_rate_coinc_Hz, delta_t_rms) VALUES\n")
+insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+", "+pulser_total_cal+", "+pulser_total_coinc+", "+pulser_total_time_counts+", "+pulser_rate_hv+", "+pulser_rate_cal+", "+pulser_rate_coinc+", \'{"+', '.join(delta_t_rms)+"}\');")
 
 
-# deltat_rms = data['deltatRMS']
-# for channel,i_deltat_rms in enumerate(deltat_rms):
-#     print(channel, i_deltat_rms)
 
 # preamp_settings = data['PreampSettings']
 # #print(preamp_settings)
