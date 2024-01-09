@@ -93,7 +93,13 @@ create table drac.test_results (
        TEMP_degC real,
        VOLT_2_5V real,
        VOLT_5_1V real,
-       pulser_total_hv integer[]
+       pulser_total_hv integer[],
+       pulser_total_cal integer[],
+       pulser_total_coinc integer[],
+       pulser_total_time_counts integer[],
+       pulser_rate_hv_Hz real[],
+       pulser_rate_cal_Hz real[],
+       pulser_rate_coinc_Hz real[]
 );
 grant select on drac.test_results to public;
 grant insert on drac.test_results to mu2e_tracker_admin;

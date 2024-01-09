@@ -158,17 +158,41 @@ for json_field in board_status_dict:
 # Get the pulser results
 pulser_rates = data['PulserRates']
 pulser_total_hv = "\'{";
+pulser_total_cal = "\'{";
+pulser_total_coinc = "\'{";
+pulser_total_time_counts = "\'{";
+pulser_rate_hv = "\'{";
+pulser_rate_cal = "\'{";
+pulser_rate_coinc = "\'{";
 n_channels = 96;
 for i_channel in range(0, n_channels):
     pulser_total_hv += str(pulser_rates[str(i_channel)]["TotalHV"]);
+    pulser_total_cal += str(pulser_rates[str(i_channel)]["TotalCal"]);
+    pulser_total_coinc += str(pulser_rates[str(i_channel)]["TotalCoinc"]);
+    pulser_total_time_counts += str(pulser_rates[str(i_channel)]["TotalTimeCounts"]);
+    pulser_rate_hv += str(pulser_rates[str(i_channel)]["RateHV"]);
+    pulser_rate_cal += str(pulser_rates[str(i_channel)]["RateCal"]);
+    pulser_rate_coinc += str(pulser_rates[str(i_channel)]["RateCoinc"]);
     if i_channel != n_channels-1:
         pulser_total_hv += ", "
+        pulser_total_cal += ", "
+        pulser_total_coinc += ", "
+        pulser_total_time_counts += ", "
+        pulser_rate_hv += ", "
+        pulser_rate_cal += ", "
+        pulser_rate_coinc += ", "
 pulser_total_hv += "}\'"
+pulser_total_cal += "}\'"
+pulser_total_coinc += "}\'"
+pulser_total_time_counts += "}\'"
+pulser_rate_hv += "}\'"
+pulser_rate_cal += "}\'"
+pulser_rate_coinc += "}\'"
 
 
 # Now insert the data
-insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv) VALUES\n")
-insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+");")
+insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv, pulser_total_cal, pulser_total_coinc, pulser_total_time_counts, pulser_rate_hv_Hz, pulser_rate_cal_Hz, pulser_rate_coinc_Hz) VALUES\n")
+insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+", "+pulser_total_cal+", "+pulser_total_coinc+", "+pulser_total_time_counts+", "+pulser_rate_hv+", "+pulser_rate_cal+", "+pulser_rate_coinc+");")
 
 
 # deltat_rms = data['deltatRMS']
