@@ -102,18 +102,64 @@ insert_sql_file.write(')\n')
 insert_sql_file.write('ON CONFLICT (id_read, silsig, design_name, checksum, design_info, design_ver, back_level, debug_info, dsn) DO NOTHING;\n') # this line means it won't insert this row if an identical row already exists
 
 
+# Insert the test results
+# First, get the config IDs for the ROC, CAL, and HV FPGAs
 roc_config_id_select="(SELECT roc_config_id from drac.roc_configs where device_serial=\'"+roc_config['DeviceSerial']+"\' and design_info=\'"+roc_config['DesignInfo']+"\' and design_ver=\'"+roc_config['DesignVer']+"\' and back_level_ver=\'"+roc_config['BackLevelVer']+"\')"
-# Test results
 cal_config_id_select="(SELECT cal_config_id from drac.cal_configs where id_read=\'"+cal_config['ID read']+"\' and silsig=\'"+cal_config['SILSIG']+"\' and design_name=\'"+cal_config['Design Name']+"\' and checksum=\'"+cal_config['Checksum']+"\' and design_info=\'"+cal_config['Design Info']+"\' and design_ver=\'"+cal_config['DESIGNVER']+"\' and back_level=\'"+cal_config['BACKLEVEL']+"\' and debug_info=\'"+cal_config['Debug Info']+"\' and dsn=\'"+cal_config['DSN']+"\')"
 hv_config_id_select="(SELECT hv_config_id from drac.hv_configs where id_read=\'"+hv_config['ID read']+"\' and silsig=\'"+hv_config['SILSIG']+"\' and design_name=\'"+hv_config['Design Name']+"\' and checksum=\'"+hv_config['Checksum']+"\' and design_info=\'"+hv_config['Design Info']+"\' and design_ver=\'"+hv_config['DESIGNVER']+"\' and back_level=\'"+hv_config['BACKLEVEL']+"\' and debug_info=\'"+hv_config['Debug Info']+"\' and dsn=\'"+hv_config['DSN']+"\')"
-# Test results
-insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id) VALUES\n")
-insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+");")
+
+# Get the Board Status test results
+board_status_dict = { 'I3.3' : "I3_3",
+                      'I2.5' : "I2_5",
+                      'I1.8HV' : "I1_8HV",
+                      'IHV5.0' : "IHV5_0",
+                      'VDMBHV5.0' : "VDMBHV5_0",
+                      'V1.8HV' : "V1_8HV",
+                      'V3.3HV' : "V3_3HV",
+                      'V2.5' : "V2_5",
+                      'A0' : "A0",
+                      'A1' : "A1",
+                      'A2' : "A2",
+                      'A3' : "A3",
+                      'I1.8CAL' : "I1_8CAL",
+                      'I1.2' : "I1_2",
+                      'ICAL5.0' : 'ICAL5_0',
+                      'ADCSPARE' : 'ADCSPARE',
+                      'V3.3' : 'V3_3',
+                      'VCAL5.0' : 'VCAL5_0',
+                      'V1.8CAL' : 'V1_8CAL',
+                      'V1.0' : 'V1_0',
+                      'ROCPCBTEMP' : 'ROCPCBTEMP',
+                      'HVPCBTEMP' : 'HVPCBTEMP',
+                      'CALPCBTEMP' : 'CALPCBTEMP',
+                      'RTD' : 'RTD',
+                      'ROC_RAIL_1V(mV)' : 'ROC_RAIL_1V_mV',
+                      'ROC_RAIL_1.8V(mV)' : 'ROC_RAIL_1_8V_mV',
+                      'ROC_RAIL_2.5V(mV)' : 'ROC_RAIL_2_5V_mV',
+                      'ROC_TEMP(CELSIUS)' : 'ROC_TEMP_degC',
+                      'CAL_RAIL_1V(mV)' : 'CAL_RAIL_1V_mV',
+                      'CAL_RAIL_1.8V(mV)' : 'CAL_RAIL_1_8V_mV',
+                      'CAL_RAIL_2.5V(mV)' : 'CAL_RAIL_2_5V_mV',
+                      'CAL_TEMP(CELSIUS)' : 'CAL_TEMP_degC',
+                      'HV_RAIL_1V(mV)' : 'HV_RAIL_1V_mV',
+                      'HV_RAIL_1.8V(mV)' : 'HV_RAIL_1_8V_mV',
+                      'HV_RAIL_2.5V(mV)' : 'HV_RAIL_2_5V_mV',
+                      'HV_TEMP(CELSIUS)' : 'HV_TEMP_degC',
+                      'TEMP[degC]' : 'TEMP_degC',
+                      '2.5V': 'VOLT_2_5V',
+                      '5.1V' : 'VOLT_5_1V'
+}
+board_status = data['BoardStatus']
+board_status_values=[]
+for json_field in board_status_dict:
+    board_status_values.append(str(board_status[json_field]))
+# Now insert the data
+insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+','.join(board_status_dict.values())+") VALUES\n")
+insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+','.join(board_status_values)+");")
 
 
-# board_status = data['BoardStatus']
-# for field in board_status:
-#     print(field, board_status[field])
+for field in board_status:
+    print(field, board_status[field])
 
 # pulser_rates = data['PulserRates']
 # for channel in pulser_rates:

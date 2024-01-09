@@ -52,6 +52,7 @@ app.use('/getEarBoard', require('./db/getEarBoard'));
 app.use('/earboard', require('./routes/earboard'));
 
 app.use('/drac', require('./routes/drac'));
+app.use('/getDracTestCols', require('./db/getDracTestCols'));
 app.use('/getDracTests', require('./db/getDracTests'));
 app.use('/getDracConfigs', require('./db/getDracConfigs'));
 

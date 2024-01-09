@@ -28,7 +28,13 @@ dracFilter.addEventListener('keyup', async function () {
 const drac_tests_response = await fetch('getDracTests/');
 const drac_tests_info = await drac_tests_response.json();
 
-var cols = ["drac_test_id", "drac_id", "panel_id", "roc_config_id", "cal_config_id"];
+const drac_test_cols_response = await fetch('getDracTestCols/');
+const drac_test_cols_info = await drac_test_cols_response.json();
+
+var cols = Array(drac_test_cols_info.length);
+for (let i_col = 0; i_col < cols.length; ++i_col) {
+    cols[i_col] = drac_test_cols_info[i_col].name;
+}
 
 var over_table = document.getElementById("drac_tests_table");
 var table = document.createElement('TABLE');
