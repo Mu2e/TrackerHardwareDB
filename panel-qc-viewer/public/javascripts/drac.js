@@ -1,3 +1,5 @@
+let colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', 'black', 'navy', 'olive' ];
+
 ///////////////////////////////
 // DRAC TEST RESULT PLOT
 //
@@ -8,7 +10,7 @@ showDracButton.addEventListener('click', async function () {
     const drac_info = await response.json();
     console.log(drac_info);
 
-    drac_test_plot = document.getElementById('drac_test_plot');
+    drac_deltat_plot = document.getElementById('drac_deltat_plot');
     var data = Array(drac_info.length);
     for (let i_drac_test = 0; i_drac_test < drac_info.length; ++i_drac_test) {
 	var this_data = {
@@ -21,7 +23,55 @@ showDracButton.addEventListener('click', async function () {
     }
 
     var layout = { title : {text: "DRAC " + drac_id + " Delta tRMS"} }
-    Plotly.newPlot(drac_test_plot, data, layout);	    
+    Plotly.newPlot(drac_deltat_plot, data, layout);	    
+
+
+    drac_preamp_plot = document.getElementById('drac_preamp_plot');
+    var preamp_data = Array();
+    for (let i_drac_test = 0; i_drac_test < drac_info.length; ++i_drac_test) {
+	if (drac_info[i_drac_test]['preamp_settings_cal_thresholds']!=null) {
+	    var cal_threshold_data = {
+		name : 'cal thresholds, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		type : 'scatter',
+		//	    x: wire_numbers,
+		y: drac_info[i_drac_test]['preamp_settings_cal_thresholds']
+	    };
+	    preamp_data.push(cal_threshold_data);
+	}
+
+	if (drac_info[i_drac_test]['preamp_settings_cal_gains'] != null) {
+	    var cal_gain_data = {
+		name : 'cal gains, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		type : 'scatter',
+		//	    x: wire_numbers,
+		y: drac_info[i_drac_test]['preamp_settings_cal_gains']
+	    };
+	    preamp_data.push(cal_gain_data);
+	}
+
+	if (drac_info[i_drac_test]['preamp_settings_hv_threhsolds']!=null){
+	    var hv_threshold_data = {
+		name : 'hv thresholds, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		type : 'scatter',
+		//	    x: wire_numbers,
+		y: drac_info[i_drac_test]['preamp_settings_hv_thresholds']
+	    };
+	    preamp_data.push(hv_threshold_data);
+	}
+
+	if (drac_info[i_drac_test]['preamp_settings_hv_gains']!=null){
+	    var hv_gain_data = {
+		name : 'hv gains, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		type : 'scatter',
+		//	    x: wire_numbers,
+		y: drac_info[i_drac_test]['preamp_settings_hv_gains']
+	    };
+	    preamp_data.push(hv_gain_data);
+	}
+    }
+    var preamp_layout = { title : {text: "DRAC " + drac_id + " Preamp Settings",},
+			  colorway : colors }
+    Plotly.newPlot(drac_preamp_plot, preamp_data, preamp_layout);
 });
 
 ///////////////////////////////
