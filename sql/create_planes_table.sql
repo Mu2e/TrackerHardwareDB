@@ -7,7 +7,9 @@ create table qc.planes (
 	panel_id_pos2 integer NULL,
 	panel_id_pos3 integer NULL,
 	panel_id_pos4 integer NULL,
-	panel_id_pos5 integer NULL
+	panel_id_pos5 integer NULL,
+	construction_start_date date,
+	construction_end_date date
 );
 
 grant select on qc.planes to public;

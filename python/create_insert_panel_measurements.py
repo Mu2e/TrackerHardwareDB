@@ -6,16 +6,13 @@ import numpy as np
 import pandas as pd
 from datetime import date
 
-measurements={ 'heights' : ["phi_location_deg", "height_inches"],
-               'pins' : ["top_panel_id", "bottom_panel_id", "pin_position", "pin_inches"],
-               'gaps' : ["panel_id", "gap_ccw_mm"]}
+measurements={ 'leaks' : ["panel_id", "leak_sccm", "comment"]}
 
 parser = argparse.ArgumentParser(
-                    prog='create_insert_plane_measurements.py',
+                    prog='create_insert_panel_measurements.py',
                     description='Create SQL files for inserting new data into measurements.panel_* tables',
                     epilog='For help contact Andy Edmonds via e-mail/Slack')
 
-parser.add_argument('--plane_id', required=True)
 parser.add_argument('--measurement_type', required=True, choices=measurements.keys(), help='the type of measurement')
 parser.add_argument('--datafile', required=True, help='csv file with the data you want to upload. The columns for each measurement type are:'+str(measurements))
 parser.add_argument('--date_taken', required=True, help='date the data was taken (format: \'yyyy-mm-dd\')')
@@ -29,7 +26,6 @@ def read_csvs(csv): #, cols):
 args = parser.parse_args()
 dict_args = vars(args) # convert to dictionary
 
-plane_id=args.plane_id
 measurement_type =args.measurement_type
 datafile=args.datafile
 date_taken=args.date_taken
@@ -42,16 +38,16 @@ cols = measurements[args.measurement_type]
 output_line = "Using data file: " + datafile;
 print(output_line)
 
-outfilename = '../sql/insert_plane_measurements.sql';
-print("Creating " + outfilename + " for plane number " + str(plane_id) + "...");
+outfilename = '../sql/insert_panel_measurements.sql';
+print("Creating " + outfilename + "...");
 
 insert_sql_file = open(outfilename, 'w')
 
-insert_sql_file.write('INSERT INTO measurements.plane_'+measurement_type+'(plane_id, '+', '.join(cols)+', date_taken) VALUES')
+insert_sql_file.write('INSERT INTO measurements.panel_'+measurement_type+'('+', '.join(cols)+', date_taken) VALUES')
 
 last_index = len(data)
 for index,row in data.iterrows():
-    insert_sql_file.write('\n('+str(plane_id)+', ');
+    insert_sql_file.write('\n(')
     for col in cols:
         insert_sql_file.write(str(row[col])+', ');
     insert_sql_file.write('\''+date_taken+'\')')
@@ -74,13 +70,13 @@ for index,row in data.iterrows():
 # update_sql_file.write("WITH new_values AS (SELECT panel_id,rise_time from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT rise_time FROM new_values) WHERE repair_id=LASTVAL();\n"); # now add the new_values to the repair row
 
 
-# update_sql_file.write("WITH old_values AS (SELECT panel_id,plane_measurements_filenames from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,plane_measurements_filenames FROM old_values;\n"); # insert the new repair row with the old values
-# update_sql_file.write("UPDATE qc.panels SET plane_measurements_filenames=\'{"
+# update_sql_file.write("WITH old_values AS (SELECT panel_id,panel_measurements_filenames from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,panel_measurements_filenames FROM old_values;\n"); # insert the new repair row with the old values
+# update_sql_file.write("UPDATE qc.panels SET panel_measurements_filenames=\'{"
 #                       + ' '.join([csvfile+"," for csvfile in nodir_csvfiles[:-1]]) # all but the last filenames should be comma-separated
 #                       + ' '.join([csvfile for csvfile in nodir_csvfiles[-1:]])
 #                       + "}\' where panel_id=" + str(panel_id) + ";\n");
-# update_sql_file.write("UPDATE repairs.panels SET column_changed=\'plane_measurements_filenames\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
-# update_sql_file.write("WITH new_values AS (SELECT panel_id,plane_measurements_filenames from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT plane_measurements_filenames FROM new_values) WHERE repair_id=LASTVAL();\n"); # now add the new_values to the repair row
+# update_sql_file.write("UPDATE repairs.panels SET column_changed=\'panel_measurements_filenames\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
+# update_sql_file.write("WITH new_values AS (SELECT panel_id,panel_measurements_filenames from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT panel_measurements_filenames FROM new_values) WHERE repair_id=LASTVAL();\n"); # now add the new_values to the repair row
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")
 print("  psql -h ifdb08 -p 5459 mu2e_tracker_prd < " + outfilename)
