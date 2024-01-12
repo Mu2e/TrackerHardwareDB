@@ -104,7 +104,9 @@ create table drac.test_results (
        preamp_settings_cal_thresholds integer[],
        preamp_settings_cal_gains integer[],
        preamp_settings_hv_thresholds integer[],
-       preamp_settings_hv_gains integer[]
+       preamp_settings_hv_gains integer[],
+       preamp_thresholds_cal real[],
+       preamp_thresholds_hv real[]
 );
 grant select on drac.test_results to public;
 grant insert on drac.test_results to mu2e_tracker_admin;

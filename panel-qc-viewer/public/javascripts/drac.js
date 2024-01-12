@@ -31,7 +31,7 @@ showDracButton.addEventListener('click', async function () {
     for (let i_drac_test = 0; i_drac_test < drac_info.length; ++i_drac_test) {
 	if (drac_info[i_drac_test]['preamp_settings_cal_thresholds']!=null) {
 	    var cal_threshold_data = {
-		name : 'cal thresholds, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		name : 'cal threshold settings, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
 		type : 'scatter',
 		//	    x: wire_numbers,
 		y: drac_info[i_drac_test]['preamp_settings_cal_thresholds']
@@ -41,7 +41,7 @@ showDracButton.addEventListener('click', async function () {
 
 	if (drac_info[i_drac_test]['preamp_settings_cal_gains'] != null) {
 	    var cal_gain_data = {
-		name : 'cal gains, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		name : 'cal gain settings, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
 		type : 'scatter',
 		//	    x: wire_numbers,
 		y: drac_info[i_drac_test]['preamp_settings_cal_gains']
@@ -51,7 +51,7 @@ showDracButton.addEventListener('click', async function () {
 
 	if (drac_info[i_drac_test]['preamp_settings_hv_threhsolds']!=null){
 	    var hv_threshold_data = {
-		name : 'hv thresholds, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		name : 'hv threshold settings, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
 		type : 'scatter',
 		//	    x: wire_numbers,
 		y: drac_info[i_drac_test]['preamp_settings_hv_thresholds']
@@ -61,15 +61,34 @@ showDracButton.addEventListener('click', async function () {
 
 	if (drac_info[i_drac_test]['preamp_settings_hv_gains']!=null){
 	    var hv_gain_data = {
-		name : 'hv gains, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		name : 'hv gain settings, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
 		type : 'scatter',
 		//	    x: wire_numbers,
 		y: drac_info[i_drac_test]['preamp_settings_hv_gains']
 	    };
 	    preamp_data.push(hv_gain_data);
 	}
+
+	if (drac_info[i_drac_test]['preamp_thresholds_cal']!=null){
+	    var cal_threshold_data = {
+		name : 'cal thresholds, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		type : 'scatter',
+		//	    x: wire_numbers,
+		y: drac_info[i_drac_test]['preamp_thresholds_cal']
+	    };
+	    preamp_data.push(cal_threshold_data);
+	}
+	if (drac_info[i_drac_test]['preamp_thresholds_hv']!=null){
+	    var hv_threshold_data = {
+		name : 'hv thresholds, panel '+drac_info[i_drac_test]['panel_id'] + ", test_id = "+drac_info[i_drac_test]['drac_test_id'],
+		type : 'scatter',
+		//	    x: wire_numbers,
+		y: drac_info[i_drac_test]['preamp_thresholds_hv']
+	    };
+	    preamp_data.push(hv_threshold_data);
+	}
     }
-    var preamp_layout = { title : {text: "DRAC " + drac_id + " Preamp Settings",},
+    var preamp_layout = { title : {text: "DRAC " + drac_id + " Preamps",},
 			  colorway : colors }
     Plotly.newPlot(drac_preamp_plot, preamp_data, preamp_layout);
 });

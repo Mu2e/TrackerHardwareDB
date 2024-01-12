@@ -218,66 +218,21 @@ for preamp_setting in preamp_settings:
         preamp_settings_hv_thresholds[int(preamp_setting['channel'])] = str(preamp_setting['threshold'])
         preamp_settings_hv_gains[int(preamp_setting['channel'])] = str(preamp_setting['gain'])
 
-#print(
+# Get the preamp thresholds
+preamp_thresholds = data['PreampThresholds']
+preamp_thresholds_cal = n_channels*["0"]
+preamp_thresholds_hv = n_channels*["0"]
+# print(preamp_thresholds)
+for channel in preamp_thresholds:
+    preamp_thresholds_cal[int(channel)] = str(preamp_thresholds[channel]['ThresholdCAL'])
+    preamp_thresholds_hv[int(channel)] = str(preamp_thresholds[channel]['ThresholdHV'])
+
 
 # Now insert the data
-insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv, pulser_total_cal, pulser_total_coinc, pulser_total_time_counts, pulser_rate_hv_Hz, pulser_rate_cal_Hz, pulser_rate_coinc_Hz, delta_t_rms, preamp_settings_cal_thresholds, preamp_settings_cal_gains, preamp_settings_hv_thresholds, preamp_settings_hv_gains) VALUES\n")
-insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+", "+pulser_total_cal+", "+pulser_total_coinc+", "+pulser_total_time_counts+", "+pulser_rate_hv+", "+pulser_rate_cal+", "+pulser_rate_coinc+", \'{"+', '.join(delta_t_rms)+"}\', \'{" + ', '.join(preamp_settings_cal_thresholds)+"}\', \'{" + ', '.join(preamp_settings_cal_gains)+"}\', \'{" + ', '.join(preamp_settings_hv_thresholds)+"}\', \'{" + ', '.join(preamp_settings_hv_gains)+"}\');")
+insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv, pulser_total_cal, pulser_total_coinc, pulser_total_time_counts, pulser_rate_hv_Hz, pulser_rate_cal_Hz, pulser_rate_coinc_Hz, delta_t_rms, preamp_settings_cal_thresholds, preamp_settings_cal_gains, preamp_settings_hv_thresholds, preamp_settings_hv_gains, preamp_thresholds_cal, preamp_thresholds_hv) VALUES\n")
+insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+", "+pulser_total_cal+", "+pulser_total_coinc+", "+pulser_total_time_counts+", "+pulser_rate_hv+", "+pulser_rate_cal+", "+pulser_rate_coinc+", \'{"+', '.join(delta_t_rms)+"}\', \'{" + ', '.join(preamp_settings_cal_thresholds)+"}\', \'{" + ', '.join(preamp_settings_cal_gains)+"}\', \'{" + ', '.join(preamp_settings_hv_thresholds)+"}\', \'{" + ', '.join(preamp_settings_hv_gains)+"}\', \'{" + ', '.join(preamp_thresholds_cal)+"}\', \'{" + ', '.join(preamp_thresholds_hv)+"}\');")
 
 
-
-#
-# #print(preamp_settings)
-
-# preamp_thresholds = data['PreampThresholds']
-# print(preamp_thresholds)
-# for channel in preamp_thresholds:
-#     print(channel, preamp_thresholds[channel])
-
-# cols = measurements[args.measurement_type]
-
-# output_line = "Using data file: " + datafile;
-# print(output_line)
-
-# outfilename = '../sql/insert_drac_tests.sql';
-# print("Creating " + outfilename + "...");
-
-# insert_sql_file = open(outfilename, 'w')
-
-# insert_sql_file.write('INSERT INTO measurements.panel_'+measurement_type+'('+', '.join(cols)+', date_taken) VALUES')
-
-# last_index = len(data)
-# for index,row in data.iterrows():
-#     insert_sql_file.write('\n(')
-#     for col in cols:
-#         insert_sql_file.write(str(row[col])+', ');
-#     insert_sql_file.write('\''+date_taken+'\')')
-
-#     if (index == last_index-1):
-#         insert_sql_file.write(';')
-#     else:
-#         insert_sql_file.write(',')
-
-# # # get the old values from qc.panels and create a new row in repairs.panels
-# # update_sql_file.write("WITH old_values AS (SELECT panel_id,max_erf_fit from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,max_erf_fit FROM old_values;\n"); # insert the new repair row with the old values
-# # update_sql_file.write("UPDATE qc.panels SET max_erf_fit=\'{" + df.sort_values('ch')['max_erf_fit'].to_string(index=False).replace("\n", ",") + "}\' where panel_id=" + str(panel_id) + ";\n");
-# # # now update repairs table
-# # update_sql_file.write("UPDATE repairs.panels SET column_changed=\'max_erf_fit\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
-# # update_sql_file.write("WITH new_values AS (SELECT panel_id,max_erf_fit from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT max_erf_fit FROM new_values) WHERE repair_id=LASTVAL();\n"); # now add the new_values to the repair row
-
-# # update_sql_file.write("WITH old_values AS (SELECT panel_id,rise_time from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,rise_time FROM old_values;\n"); # insert the new repair row with the old values
-# # update_sql_file.write("UPDATE qc.panels SET rise_time=\'{" + df.sort_values('ch')['rise_time'].to_string(index=False).replace("\n", ",") + "}\' where panel_id=" + str(panel_id) + ";\n");
-# # update_sql_file.write("UPDATE repairs.panels SET column_changed=\'rise_time\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
-# # update_sql_file.write("WITH new_values AS (SELECT panel_id,rise_time from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT rise_time FROM new_values) WHERE repair_id=LASTVAL();\n"); # now add the new_values to the repair row
-
-
-# # update_sql_file.write("WITH old_values AS (SELECT panel_id,drac_tests_filenames from qc.panels WHERE panel_id="+str(panel_id)+") INSERT INTO repairs.panels(panel_id, old_value) SELECT panel_id,drac_tests_filenames FROM old_values;\n"); # insert the new repair row with the old values
-# # update_sql_file.write("UPDATE qc.panels SET drac_tests_filenames=\'{"
-# #                       + ' '.join([csvfile+"," for csvfile in nodir_csvfiles[:-1]]) # all but the last filenames should be comma-separated
-# #                       + ' '.join([csvfile for csvfile in nodir_csvfiles[-1:]])
-# #                       + "}\' where panel_id=" + str(panel_id) + ";\n");
-# # update_sql_file.write("UPDATE repairs.panels SET column_changed=\'drac_tests_filenames\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
-# # update_sql_file.write("WITH new_values AS (SELECT panel_id,drac_tests_filenames from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT drac_tests_filenames FROM new_values) WHERE repair_id=LASTVAL();\n"); # now add the new_values to the repair row
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")
 print("  psql -h ifdb08 -p 5459 mu2e_tracker_prd < " + outfilename)
