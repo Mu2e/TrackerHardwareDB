@@ -100,7 +100,11 @@ create table drac.test_results (
        pulser_rate_hv_Hz real[],
        pulser_rate_cal_Hz real[],
        pulser_rate_coinc_Hz real[],
-       delta_t_rms real[]
+       delta_t_rms real[],
+       preamp_settings_cal_thresholds integer[],
+       preamp_settings_cal_gains integer[],
+       preamp_settings_hv_thresholds integer[],
+       preamp_settings_hv_gains integer[]
 );
 grant select on drac.test_results to public;
 grant insert on drac.test_results to mu2e_tracker_admin;

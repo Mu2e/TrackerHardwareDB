@@ -166,13 +166,23 @@ pulser_rate_cal = "\'{";
 pulser_rate_coinc = "\'{";
 n_channels = 96;
 for i_channel in range(0, n_channels):
-    pulser_total_hv += str(pulser_rates[str(i_channel)]["TotalHV"]);
-    pulser_total_cal += str(pulser_rates[str(i_channel)]["TotalCal"]);
-    pulser_total_coinc += str(pulser_rates[str(i_channel)]["TotalCoinc"]);
-    pulser_total_time_counts += str(pulser_rates[str(i_channel)]["TotalTimeCounts"]);
-    pulser_rate_hv += str(pulser_rates[str(i_channel)]["RateHV"]);
-    pulser_rate_cal += str(pulser_rates[str(i_channel)]["RateCal"]);
-    pulser_rate_coinc += str(pulser_rates[str(i_channel)]["RateCoinc"]);
+    if str(i_channel) in pulser_rates:
+        pulser_total_hv += str(pulser_rates[str(i_channel)]["TotalHV"]);
+        pulser_total_cal += str(pulser_rates[str(i_channel)]["TotalCal"]);
+        pulser_total_coinc += str(pulser_rates[str(i_channel)]["TotalCoinc"]);
+        pulser_total_time_counts += str(pulser_rates[str(i_channel)]["TotalTimeCounts"]);
+        pulser_rate_hv += str(pulser_rates[str(i_channel)]["RateHV"]);
+        pulser_rate_cal += str(pulser_rates[str(i_channel)]["RateCal"]);
+        pulser_rate_coinc += str(pulser_rates[str(i_channel)]["RateCoinc"]);
+    else:
+        pulser_total_hv += "0";
+        pulser_total_cal += "0";
+        pulser_total_coinc += "0";
+        pulser_total_time_counts += "0";
+        pulser_rate_hv += "0";
+        pulser_rate_cal += "0";
+        pulser_rate_coinc += "0";
+
     if i_channel != n_channels-1:
         pulser_total_hv += ", "
         pulser_total_cal += ", "
@@ -194,16 +204,30 @@ delta_t_rms=[]
 for i_delta_t_rms in data['deltatRMS']:
     delta_t_rms.append(str(i_delta_t_rms))
 
+# Get the preamp settings
+preamp_settings = data['PreampSettings']
+preamp_settings_cal_thresholds=n_channels*["0"];
+preamp_settings_cal_gains=n_channels*["0"];
+preamp_settings_hv_thresholds=n_channels*["0"];
+preamp_settings_hv_gains=n_channels*["0"];
+for preamp_setting in preamp_settings:
+    if preamp_setting['type'] == 'cal':
+        preamp_settings_cal_thresholds[int(preamp_setting['channel'])] = str(preamp_setting['threshold'])
+        preamp_settings_cal_gains[int(preamp_setting['channel'])] = str(preamp_setting['gain'])
+    if preamp_setting['type'] == 'hv':
+        preamp_settings_hv_thresholds[int(preamp_setting['channel'])] = str(preamp_setting['threshold'])
+        preamp_settings_hv_gains[int(preamp_setting['channel'])] = str(preamp_setting['gain'])
+
+#print(
+
 # Now insert the data
-insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv, pulser_total_cal, pulser_total_coinc, pulser_total_time_counts, pulser_rate_hv_Hz, pulser_rate_cal_Hz, pulser_rate_coinc_Hz, delta_t_rms) VALUES\n")
-insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+", "+pulser_total_cal+", "+pulser_total_coinc+", "+pulser_total_time_counts+", "+pulser_rate_hv+", "+pulser_rate_cal+", "+pulser_rate_coinc+", \'{"+', '.join(delta_t_rms)+"}\');")
+insert_sql_file.write("\nINSERT INTO drac.test_results(drac_id, panel_id, roc_config_id, cal_config_id, hv_config_id, "+', '.join(board_status_dict.values())+", pulser_total_hv, pulser_total_cal, pulser_total_coinc, pulser_total_time_counts, pulser_rate_hv_Hz, pulser_rate_cal_Hz, pulser_rate_coinc_Hz, delta_t_rms, preamp_settings_cal_thresholds, preamp_settings_cal_gains, preamp_settings_hv_thresholds, preamp_settings_hv_gains) VALUES\n")
+insert_sql_file.write("(\'"+drac_id+"\', "+panel_id+", "+roc_config_id_select+", "+cal_config_id_select+", " + hv_config_id_select+", "+', '.join(board_status_values)+", "+pulser_total_hv+", "+pulser_total_cal+", "+pulser_total_coinc+", "+pulser_total_time_counts+", "+pulser_rate_hv+", "+pulser_rate_cal+", "+pulser_rate_coinc+", \'{"+', '.join(delta_t_rms)+"}\', \'{" + ', '.join(preamp_settings_cal_thresholds)+"}\', \'{" + ', '.join(preamp_settings_cal_gains)+"}\', \'{" + ', '.join(preamp_settings_hv_thresholds)+"}\', \'{" + ', '.join(preamp_settings_hv_gains)+"}\');")
 
 
 
-# preamp_settings = data['PreampSettings']
+#
 # #print(preamp_settings)
-# for i,field in enumerate(preamp_settings):
-#     print(i, field)
 
 # preamp_thresholds = data['PreampThresholds']
 # print(preamp_thresholds)
