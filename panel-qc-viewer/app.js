@@ -40,8 +40,9 @@ app.use('/all_panel_qc', require('./routes/all_panel_qc'));
 app.use('/allPlanes', require('./db/allPlanes'));
 app.use('/getPlane', require('./db/getPlane'));
 app.use('/getPlaneRepairs', require('./db/getPlaneRepairs'));
-app.use('/getPlaneMeasurements', require('./db/getPlaneMeasurements'));
 app.use('/plane_qc', require('./routes/plane_qc'));
+
+app.use('/getMeasurements', require('./db/getMeasurements'));
 
 app.use('/getPanelFromFNALPlanesDB', require('./db/getPanelFromFNALPlanesDB'));
 app.use('/getImportDateOfFNALPlanesDB', require('./db/getImportDateOfFNALPlanesDB'));
@@ -49,6 +50,11 @@ app.use('/fnal_plane_db', require('./routes/fnal_plane_db'));
 
 app.use('/getEarBoard', require('./db/getEarBoard'));
 app.use('/earboard', require('./routes/earboard'));
+
+app.use('/drac', require('./routes/drac'));
+app.use('/getDracTestCols', require('./db/getDracTestCols'));
+app.use('/getDracTests', require('./db/getDracTests'));
+app.use('/getDracConfigs', require('./db/getDracConfigs'));
 
 
 

@@ -17,6 +17,8 @@ parser.add_argument('--add_panels_in_order', nargs='*', help='Add panels in orde
 parser.add_argument('--panel_swap_out', nargs=1, help='Swap this panel in')
 parser.add_argument('--panel_swap_in', nargs=1, help='Swap this panel out')
 parser.add_argument('--panel_swap_pos', nargs=1, help='Position where panel was')
+parser.add_argument('--construction_start_date', help='date the plane started construction (format: \'yyyy-mm-dd\')')
+parser.add_argument('--construction_end_date', help='date the plane ended construction (format: \'yyyy-mm-dd\')')
 parser.add_argument('--append', type=bool, default=False, help='Append SQL commands to previously created .sql file')
 
 args = parser.parse_args()
@@ -29,6 +31,8 @@ panel_swap_in=dict_args['panel_swap_in']
 panel_swap_out=dict_args['panel_swap_out']
 panel_swap_pos=dict_args['panel_swap_pos']
 #panels_to_remove=dict_args['remove_panels']
+construction_start_date=args.construction_start_date
+construction_end_date=args.construction_end_date
 comment=args.comment
 
 if panels_to_add!=None:
@@ -88,6 +92,21 @@ if (panel_swap_out != None):
         update_sql_file.write("WITH new_values AS (SELECT plane_id,"+column+" from qc.planes WHERE plane_id="+str(plane_id)+") UPDATE repairs.planes SET new_value=(SELECT "+column+" FROM new_values) WHERE repair_id=LASTVAL();\n"); # insert the new repair row with the old values
 
 
+if (construction_start_date != None):
+    update_sql_file.write("WITH old_values AS (SELECT plane_id,construction_start_date from qc.planes WHERE plane_id="+str(plane_id)+") INSERT INTO repairs.planes(plane_id, old_value) SELECT plane_id,construction_start_date FROM old_values;\n"); # insert the new repair row with the old values
+    # make changes to qc.planes
+    update_sql_file.write("UPDATE qc.planes SET construction_start_date=\'"+construction_start_date+"\' where plane_id=" + str(plane_id) + ";\n");
+    # now update repairs table
+    update_sql_file.write("UPDATE repairs.planes SET column_changed=\'construction_start_date\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
+    update_sql_file.write("WITH new_values AS (SELECT plane_id,construction_start_date from qc.planes WHERE plane_id="+str(plane_id)+") UPDATE repairs.planes SET new_value=(SELECT construction_start_date FROM new_values) WHERE repair_id=LASTVAL();\n"); # insert the new repair row with the old values
+
+if (construction_end_date != None):
+    update_sql_file.write("WITH old_values AS (SELECT plane_id,construction_end_date from qc.planes WHERE plane_id="+str(plane_id)+") INSERT INTO repairs.planes(plane_id, old_value) SELECT plane_id,construction_end_date FROM old_values;\n"); # insert the new repair row with the old values
+    # make changes to qc.planes
+    update_sql_file.write("UPDATE qc.planes SET construction_end_date=\'"+construction_end_date+"\' where plane_id=" + str(plane_id) + ";\n");
+    # now update repairs table
+    update_sql_file.write("UPDATE repairs.planes SET column_changed=\'construction_end_date\',date_uploaded=\'"+date.today().strftime('%Y-%m-%d')+"\',comment=\'"+comment+"\' where repair_id=LASTVAL();\n") # now add the changed column and comment
+    update_sql_file.write("WITH new_values AS (SELECT plane_id,construction_end_date from qc.planes WHERE plane_id="+str(plane_id)+") UPDATE repairs.planes SET new_value=(SELECT construction_end_date FROM new_values) WHERE repair_id=LASTVAL();\n"); # insert the new repair row with the old values
 
 
 
