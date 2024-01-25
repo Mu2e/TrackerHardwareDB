@@ -20,8 +20,8 @@ create table measurements.plane_pins (
 	plane_id integer,
 	top_panel_id integer,
 	bottom_panel_id integer,
-	pin_position integer,
-	pin_inches float,
+	pin_pos1_inches float,
+	pin_pos2_inches float,
 	date_taken date
 );
 

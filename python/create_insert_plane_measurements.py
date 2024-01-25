@@ -7,7 +7,7 @@ import pandas as pd
 from datetime import date
 
 measurements={ 'heights' : ["phi_location_deg", "height_inches"],
-               'pins' : ["top_panel_id", "bottom_panel_id", "pin_position", "pin_inches"],
+               'pins' : ["top_panel_id", "bottom_panel_id", "pin_pos1_inches", "pin_pos2_inches"],
                'gaps' : ["first_panel_id", "second_panel_id", "gap_ccw_mm"]}
 
 parser = argparse.ArgumentParser(
