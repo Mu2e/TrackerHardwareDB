@@ -9,7 +9,7 @@ var yes = 1.0;
 var no = 0.5;
 var unknown = 0;
 
-let colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', 'black', 'navy', 'olive' ];
+let colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', 'black', 'navy', 'olive', 'powderblue' ];
 
 let yes_no_colors = ['blue', 'red', 'lightblue', 'pink', 'darkblue', 'darkred', 'aquamarine', 'crimson', 'midnightblue', 'darksalmon', 'powderblue', 'mediumvioletred']//#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', 'black', 'navy', 'olive' ];;//['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', 'green', 'red', 'lightgreen', 'lightred', 'darkgreen', 'darkred', 'white', 'black'];
 
