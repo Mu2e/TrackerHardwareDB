@@ -174,7 +174,7 @@ showPlaneButton.addEventListener('click', async function () {
 		    break;
 		}
 		let gap_ccw_mm = gap_measurements[i_gap_measurement]["gap_ccw_mm"];
-		measurement_output += gap_measurements[i_gap_measurement]['panel_id'] + " (ccw): " +  gap_ccw_mm.toFixed(3) + " mm\n";
+		measurement_output += gap_measurements[i_gap_measurement]['first_panel_id'] + ", " + gap_measurements[i_gap_measurement]['second_panel_id'] + " (ccw): " +  gap_ccw_mm.toFixed(3) + " mm\n";
 	    }
 	}
 	else {

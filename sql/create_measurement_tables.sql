@@ -31,7 +31,8 @@ grant insert on measurements.plane_pins to mu2e_tracker_admin;
 create table measurements.plane_gaps (
        gap_measurement_id SERIAL primary key,
 	plane_id integer,
-	panel_id integer,
+	first_panel_id integer,
+	second_panel_id integer,
 	gap_ccw_mm float,
 	date_taken date
 );
