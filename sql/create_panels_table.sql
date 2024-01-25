@@ -27,7 +27,8 @@ create table qc.panels (
 	passes_final_amb_dmb_leak_check BOOLEAN,
 	earflooding_trimming_done BOOLEAN,
 	air_test_for_straw_blockage_done BOOLEAN,
-	disconnected_preamps integer[] DEFAULT '{}'
+	disconnected_preamps integer[] DEFAULT '{}',
+	patched_straws integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
