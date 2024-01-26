@@ -150,11 +150,17 @@ showPlaneButton.addEventListener('click', async function () {
 		if (pin_measurements[i_pin_measurement]['date_taken'] != first_date) {
 		    break;
 		}
-		let pin_inches = pin_measurements[i_pin_measurement]["pin_inches"];
-		let nominal_diff = pin_inches - nominal_pin;
+		let pin_pos1_inches = pin_measurements[i_pin_measurement]["pin_pos1_inches"];
+		let nominal_diff = pin_pos1_inches - nominal_pin;
 		total_nominal_diff  += nominal_diff;
 		total_pins++;
-		measurement_output += pin_measurements[i_pin_measurement]['top_panel_id'] + " - " + pin_measurements[i_pin_measurement]['bottom_panel_id'] + " (pos. " + pin_measurements[i_pin_measurement]['pin_position'] + ") = " +  pin_inches + "\" (" +  nominal_diff.toFixed(3) + "\" from nominal)\n";
+		measurement_output += pin_measurements[i_pin_measurement]['top_panel_id'] + " - " + pin_measurements[i_pin_measurement]['bottom_panel_id'] + " (pos. 1) = " +  pin_pos1_inches + "\" (" +  nominal_diff.toFixed(3) + "\" from nominal)\n";
+
+		let pin_pos2_inches = pin_measurements[i_pin_measurement]["pin_pos2_inches"];
+		nominal_diff = pin_pos2_inches - nominal_pin;
+		total_nominal_diff  += nominal_diff;
+		total_pins++;
+		measurement_output += pin_measurements[i_pin_measurement]['top_panel_id'] + " - " + pin_measurements[i_pin_measurement]['bottom_panel_id'] + " (pos. 2) = " +  pin_pos2_inches + "\" (" +  nominal_diff.toFixed(3) + "\" from nominal)\n";
 	    }
 	    let mean_nominal_diff = total_nominal_diff / total_pins;
 	    measurement_output += "Mean diff. from nominal = " + mean_nominal_diff.toFixed(3) + "\"\n"
@@ -174,7 +180,7 @@ showPlaneButton.addEventListener('click', async function () {
 		    break;
 		}
 		let gap_ccw_mm = gap_measurements[i_gap_measurement]["gap_ccw_mm"];
-		measurement_output += gap_measurements[i_gap_measurement]['panel_id'] + " (ccw): " +  gap_ccw_mm.toFixed(3) + " mm\n";
+		measurement_output += gap_measurements[i_gap_measurement]['first_panel_id'] + ", " + gap_measurements[i_gap_measurement]['second_panel_id'] + " (ccw): " +  gap_ccw_mm.toFixed(3) + " mm\n";
 	    }
 	}
 	else {
