@@ -28,7 +28,8 @@ create table qc.panels (
 	earflooding_trimming_done BOOLEAN,
 	air_test_for_straw_blockage_done BOOLEAN,
 	disconnected_preamps integer[] DEFAULT '{}',
-	patched_straws integer[] DEFAULT '{}'
+	patched_straws integer[] DEFAULT '{}',
+	loose_preamp_anode_connections integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
