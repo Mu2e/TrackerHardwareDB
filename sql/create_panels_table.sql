@@ -29,7 +29,8 @@ create table qc.panels (
 	air_test_for_straw_blockage_done BOOLEAN,
 	disconnected_preamps integer[] DEFAULT '{}',
 	patched_straws integer[] DEFAULT '{}',
-	loose_preamp_anode_connections integer[] DEFAULT '{}'
+	loose_preamp_anode_connections integer[] DEFAULT '{}',
+	passes_first_amb_dmb_leak_check BOOLEAN
 );
 
 grant select on qc.panels to public;
