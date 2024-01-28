@@ -30,7 +30,8 @@ create table qc.panels (
 	disconnected_preamps integer[] DEFAULT '{}',
 	patched_straws integer[] DEFAULT '{}',
 	loose_preamp_anode_connections integer[] DEFAULT '{}',
-	passes_first_amb_dmb_leak_check BOOLEAN
+	passes_first_amb_dmb_leak_check BOOLEAN,
+	suspicious_preamp_thresholds integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
