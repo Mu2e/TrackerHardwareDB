@@ -31,7 +31,8 @@ create table qc.panels (
 	patched_straws integer[] DEFAULT '{}',
 	loose_preamp_anode_connections integer[] DEFAULT '{}',
 	passes_first_amb_dmb_leak_check BOOLEAN,
-	suspicious_preamp_thresholds integer[] DEFAULT '{}'
+	suspicious_preamp_thresholds integer[] DEFAULT '{}',
+	drac_id varchar
 );
 
 grant select on qc.panels to public;
