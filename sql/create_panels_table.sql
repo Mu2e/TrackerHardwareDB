@@ -22,7 +22,7 @@ create table qc.panels (
 	maxerf_risetime_filenames text[] DEFAULT '{}',
 	earboard BOOLEAN,
 	hv_test_done BOOLEAN,
-	loose_preamp_connections integer[] DEFAULT '{}',
+	loose_preamp_amb_connections integer[] DEFAULT '{}',
 	low_anode_cathode_resistances integer[] DEFAULT '{}',
 	passes_final_amb_dmb_leak_check BOOLEAN,
 	earflooding_trimming_done BOOLEAN,
