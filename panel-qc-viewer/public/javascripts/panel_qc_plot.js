@@ -171,5 +171,8 @@ export function plot_panel_qc(panel_info, straw_status_plot, position="") {
 	}
     }
 
+    // Output the DRAC ID
+    output += "\n\t DRAC ID = " + this_panel_issues['drac_id'];
+
     return output;
 }

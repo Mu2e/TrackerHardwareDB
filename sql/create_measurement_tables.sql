@@ -20,8 +20,8 @@ create table measurements.plane_pins (
 	plane_id integer,
 	top_panel_id integer,
 	bottom_panel_id integer,
-	pin_position integer,
-	pin_inches float,
+	pin_pos1_inches float,
+	pin_pos2_inches float,
 	date_taken date
 );
 
@@ -31,7 +31,8 @@ grant insert on measurements.plane_pins to mu2e_tracker_admin;
 create table measurements.plane_gaps (
        gap_measurement_id SERIAL primary key,
 	plane_id integer,
-	panel_id integer,
+	first_panel_id integer,
+	second_panel_id integer,
 	gap_ccw_mm float,
 	date_taken date
 );

@@ -33,7 +33,7 @@ cols_to_extract = {#'Missing_straws': 'missing_straws',
 #                   'Shorts' : 'short_wires',
                    'Plane_number' : 'tbd'}
 
-cols_to_check = [ 'Loose_omega', 'Notes', 'HV_issues', 'HV_test_done', 'Repairs', 'Air_test_for_blocked_straws' ] # move Loose_omega to just a thing we should check
+cols_to_check = [ 'Loose_omega', 'Notes', 'HV_issues', 'HV_test_done', 'Repairs', 'Air_test_for_blocked_straws', 'patched_straw' ] # move Loose_omega to just a thing we should check
 
 min_panel_id=args.min_panel_id
 max_panel_id=300
