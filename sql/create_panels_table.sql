@@ -32,7 +32,7 @@ create table qc.panels (
 	loose_preamp_anode_connections integer[] DEFAULT '{}',
 	passes_first_amb_dmb_leak_check BOOLEAN,
 	suspicious_preamp_thresholds integer[] DEFAULT '{}',
-	drac_id varchar
+	short_omega_pieces integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
