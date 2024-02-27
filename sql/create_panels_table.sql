@@ -32,7 +32,10 @@ create table qc.panels (
 	loose_preamp_anode_connections integer[] DEFAULT '{}',
 	passes_first_amb_dmb_leak_check BOOLEAN,
 	suspicious_preamp_thresholds integer[] DEFAULT '{}',
-	short_omega_pieces integer[] DEFAULT '{}'
+	short_omega_pieces integer[] DEFAULT '{}',
+	survey_hole_problem_hv BOOLEAN,
+	survey_hole_problem_mid BOOLEAN,
+	survey_hole_problem_cal BOOLEAN
 );
 
 grant select on qc.panels to public;
