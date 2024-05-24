@@ -94,4 +94,4 @@ update_sql_file.write("UPDATE repairs.panels SET column_changed=\'maxerf_risetim
 update_sql_file.write("WITH new_values AS (SELECT panel_id,maxerf_risetime_filenames from qc.panels WHERE panel_id="+str(panel_id)+") UPDATE repairs.panels SET new_value=(SELECT maxerf_risetime_filenames FROM new_values) WHERE repair_id=LASTVAL();\n"); # now add the new_values to the repair row
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")
-print("  psql -h ifdb08 -p 5459 mu2e_tracker_prd < " + outfilename)
+print("  psql -h ifdb11 -p 5459 mu2e_tracker_prd < " + outfilename)

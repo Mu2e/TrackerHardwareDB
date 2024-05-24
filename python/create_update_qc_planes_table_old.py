@@ -62,4 +62,4 @@ update_sql_file.write("WITH new_values AS (SELECT plane_id,panel_ids from qc.pla
 
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")
-print("  psql -h ifdb08 -p 5459 mu2e_tracker_prd < " + outfilename)
+print("  psql -h ifdb11 -p 5459 mu2e_tracker_prd < " + outfilename)
