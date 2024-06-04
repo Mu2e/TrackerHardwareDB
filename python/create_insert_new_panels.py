@@ -31,4 +31,4 @@ insert_sql_file.write(";")
 
 print("Done!");
 print("Now check " + outfilename + " looks OK and then run the following command:")
-print("  psql -h ifdb08 -p 5459 mu2e_tracker_prd < " + outfilename)
+print("  psql -h ifdb11 -p 5459 mu2e_tracker_prd < " + outfilename)

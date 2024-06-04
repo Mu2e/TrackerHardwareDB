@@ -3,7 +3,7 @@ showAnaHVDataButton.addEventListener('click', async function () {
     var output = "";
     var panel_number = parseInt(document.getElementById('panel_number_ana').value);
 
-    const max_run_to_try = 10;
+    const max_run_to_try = 15;
     const min_run_to_try = 1;
     if (!isNaN(panel_number)) {
 	var this_title = "Panel "+panel_number;
@@ -18,7 +18,7 @@ showAnaHVDataButton.addEventListener('click', async function () {
 		--i_smooth_run;
 	    }
 	    else if (i_smooth_run > min_run_to_try) {
-		img_smoothdata.src =  "images/hv_data/mn" + panel_number.toString().padStart(3,'0') + "_r" + i_smooth_run.toString() + "_smooth.png";
+		img_smoothdata.src =  "images/hv_data/mn" + panel_number.toString().padStart(3,'0') + "_datasmooth" + "_r" + i_smooth_run.toString() + ".png";
 		--i_smooth_run;
 	    }
 	    else {
@@ -37,7 +37,7 @@ showAnaHVDataButton.addEventListener('click', async function () {
 		--i_raw_run;
 	    }
 	    else if (i_raw_run > min_run_to_try) {
-		img_rawdata.src =  "images/hv_data/mn" + panel_number.toString().padStart(3,'0') + "_r" + i_raw_run.toString() + ".png";
+		img_rawdata.src =  "images/hv_data/mn" + panel_number.toString().padStart(3,'0') + "_rawdata_r" + i_raw_run.toString() + ".png";
 		--i_raw_run;
 	    }
 	    else {

@@ -483,4 +483,4 @@ print("Done!");
 print("Total Number of Files Archived = "+str(len(input_filenames) + len(csv_filenames) + len(log_filenames)))
 print("\t"+str(len(csv_filenames))+" csv/dat files, "+str(len(input_filenames))+" input files, and "+str(len(log_filenames))+" log files")
 print("Now check " + outfilename + " looks OK and then run the following command:")
-print("  psql -h ifdb08 -p 5459 mu2e_tracker_prd < " + outfilename)
+print("  psql -h ifdb11 -p 5459 mu2e_tracker_prd < " + outfilename)
