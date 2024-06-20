@@ -184,6 +184,7 @@ for readme_filename in readme_filenames:
 #            break
         counter=counter+1
 
+#print(readme_dict.keys())
 #print(input_dict)
 #print(log_dict)
 
@@ -343,29 +344,30 @@ for tarname in tarfile_dict.keys():
                 break # only want first line
 
         # we also have dates in the comment ("daq start" and input and log files)
-        try:
-            comment = readme_dict[i_csv_filename.split('/')[-1].replace('.csv', '')]
-            found = re.search('\d{2}-\d{2}-\d{4}', comment)
-            if found != None:
-                date = datetime.strptime(found.group(), '%m-%d-%Y')
-                first_lines.append(date)
-                last_lines.append(date)
-        except KeyError:
-            # try .dat instead of .csv
-            for key in readme_dict:
-                if i_csv_filename.split('/')[-1] in readme_dict[key]:
-                    comment = readme_dict[key]
-                    break
-#            print(comment)
-            found = re.search('\d{4}-\d{2}-\d{2}', comment)
-            if found != None:
-                date = datetime.strptime(found.group(), '%Y-%m-%d')
-                first_lines.append(date)
-                last_lines.append(date)
-            else:
-                print("ERROR: not found a date for "+i_csv_filename)
-                date=""
-#                exit()
+        if (len(first_lines)==0 and len(last_lines)==0):
+            try:
+                comment = readme_dict[i_csv_filename.split('/')[-1].replace('.csv', '')]
+                found = re.search('\d{2}-\d{2}-\d{4}', comment)
+                if found != None:
+                    date = datetime.strptime(found.group(), '%m-%d-%Y')
+                    first_lines.append(date)
+                    last_lines.append(date)
+            except KeyError:
+                # try .dat instead of .csv
+                for key in readme_dict:
+                    if i_csv_filename.split('/')[-1] in readme_dict[key]:
+                        comment = readme_dict[key]
+                        break
+                    #            print(comment)
+                found = re.search('\d{4}-\d{2}-\d{2}', comment)
+                if found != None:
+                    date = datetime.strptime(found.group(), '%Y-%m-%d')
+                    first_lines.append(date)
+                    last_lines.append(date)
+                else:
+                    print("ERROR: not found a date for "+i_csv_filename)
+                    date=""
+                #                exit()
 
 
     first_date = "YYYYMMDD" # default dates in case there are not timestamps...
@@ -374,6 +376,7 @@ for tarname in tarfile_dict.keys():
         first_date = min(first_lines).strftime("%Y%m%d")
     if (len(last_lines)>0):
         last_date = max(last_lines).strftime("%Y%m%d")
+#    print(last_lines)
 #    print(first_date, last_date)
 #    exit(1)
     tarball_filename = "bck.mu2e.PanelQC_HV.Fe55."+tarname+"_"+first_date+"_"+last_date+".tbz"
@@ -389,13 +392,15 @@ for tarname in tarfile_dict.keys():
                 break
         print("\t adding "+i_csv_filename+"...")
         tar.add(i_csv_filename, arcname="hv-data/"+tarred_name) # just want the csvfilename not the whole directory structure
-        i_csv_filename_mod = i_csv_filename.replace('.csv', '').replace('currvstime_', '').replace('currvstime', '')
+        i_csv_filename_mod = i_csv_filename.split('/')[-1].replace('.csv', '').replace('currvstime_', '').replace('currvstime', '').replace('crampdata_','').replace('crampdata','').replace('MN','mn')
+        i_csv_filename_mod = re.sub('a[0-9]_', '', i_csv_filename_mod, count=1)
+#        print(i_csv_filename_mod)
         try:
-#            print("Trying to find "+i_csv_filename.split('/')[-1].replace('.csv', ''))
-            comment = readme_dict[i_csv_filename.split('/')[-1].replace('.csv', '')]
-            #        print(i_csv_filename+" *was* found in README")
+#            print("Trying to find "+i_csv_filename_mod)
+            comment = readme_dict[i_csv_filename_mod]
+#            print(i_csv_filename_mod+" *was* found in README")
         except KeyError:
-#            print(i_csv_filename_mod+" was not found in README")
+            print(i_csv_filename_mod+" was not found in README")
             comment = "was not found in README"
 
 #        print(i_csv_filename)
@@ -423,7 +428,9 @@ for tarname in tarfile_dict.keys():
                 if (input_file_found):
                     break
             if not input_file_found:
-                print("\tCouldn't find input file for "+i_csv_filename+". Check if it was specified in README...")
+                if "pedestal" not in i_csv_filename:
+                    print("\tCouldn't find input file for "+i_csv_filename+". Check if it was specified in README...")
+#                exit()
             else:
 #                exit()
                 print("\t adding "+actual_input_filename+"...")
@@ -454,7 +461,8 @@ for tarname in tarfile_dict.keys():
                 if (log_file_found):
                     break
             if not log_file_found:
-                print("\tCouldn't find log file for "+i_csv_filename+". Check if it was specified in README...")
+                if "pedestal" not in i_csv_filename:
+                    print("\tCouldn't find log file for "+i_csv_filename+". Check if it was specified in README...")
             else:
                 print("\t adding "+actual_log_filename+"...")
                 tarred_log_name = actual_log_filename.split('/')[-1]
