@@ -2,6 +2,7 @@ import re # regexp
 import os
 import argparse
 import tarfile
+import psycopg2
 
 from datetime import date, datetime
 from collections import deque
@@ -17,6 +18,12 @@ def get_filename(string):
 
 def add_escape_chars(string):
     return string.replace('\'', '\'\'')
+
+def get_tarball_filename(tarname, first_date, last_date, tar_counter):
+    if (tar_counter == 0):
+        return "bck.mu2e.PanelQC_HV.Fe55."+tarname+"_"+first_date+"_"+last_date+".tbz"
+    else:
+        return "bck.mu2e.PanelQC_HV.Fe55."+tarname+"_"+first_date+"_"+last_date+"_"+str(tar_counter)+".tbz"
 
 parser = argparse.ArgumentParser(
                     prog='create_insert_panel_hv_data_files.py',
@@ -379,7 +386,26 @@ for tarname in tarfile_dict.keys():
 #    print(last_lines)
 #    print(first_date, last_date)
 #    exit(1)
-    tarball_filename = "bck.mu2e.PanelQC_HV.Fe55."+tarname+"_"+first_date+"_"+last_date+".tbz"
+    tar_counter = 0;
+    tarball_filename = get_tarball_filename(tarname, first_date, last_date, tar_counter)
+    # check whether tarball_filename exists already
+    USER=os.environ.get('USER')
+    #psql -h ifdb11 -p 5459 mu2e_tracker_prd
+    conn = psycopg2.connect(database = "mu2e_tracker_prd",
+                            user = USER,
+                            host= 'ifdb11',
+                            port = 5459)
+
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM qc.panel_hv_data_files WHERE tarball=\''+tarball_filename+'\';')
+    rows = cur.fetchall()
+    while (len(rows) != 0): # tarball filename already exists
+        tar_counter = tar_counter+1
+        tarball_filename = get_tarball_filename(tarname, first_date, last_date, tar_counter)
+        cur.execute('SELECT * FROM qc.panel_hv_data_files WHERE tarball=\''+tarball_filename+'\';')
+        rows = cur.fetchall()
+
+    conn.close()
 
     print("Tarring up "+tarball_filename+"...")
     tar = tarfile.open(tarball_filename, "w:gz")
