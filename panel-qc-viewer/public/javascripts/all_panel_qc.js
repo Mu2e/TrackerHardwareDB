@@ -46,11 +46,16 @@ for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
     }
 
     // Define Data
+    var default_visible = '';
+    if (issue == "kapton_dots") { // at the moment, we don't want kapton_dots to count as an "issue" for the summary plot
+	default_visible = 'legendonly'; // so have it off by default, but still available if we want to know how many kapton_dots are on each panel
+    }
     single_channel_n_data[i_issue] = {name : issue,
 					  x: panels,
 					  y: n_issue,
 					  mode:"markers",
-					  type:"bar"
+				      type:"bar",
+				      visible:default_visible
 					 }
 }
 var single_channel_issue_vs_panel_plot = document.getElementById('single_channel_issue_vs_panel_plot');
@@ -154,11 +159,16 @@ for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
     }
 
     // Define Data
+    var default_visible = '';
+    if (issue == "kapton_dots") { // at the moment, we don't want kapton_dots to count as an "issue" for the summary plot
+	default_visible = 'legendonly'; // so have it off by default, but still available if we want to know how many kapton_dots are on each panel
+    }
     single_channel_n_data_plane[i_issue] = {name : issue,
 					  x: planes,
 					  y: n_issue,
 					  mode:"markers",
-					  type:"bar"
+					    type:"bar",
+					    visible:default_visible
 					 }
 }
 
