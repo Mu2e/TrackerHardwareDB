@@ -4,7 +4,9 @@ export function get_panels_in_plane(plane_info) {
     var panels = Array();
     for (let i_panel = 0; i_panel < panel_positions.length; ++i_panel) {
 	if (plane_info['panel_ids'].length>0) { // some planes have not been updated to the new 6-column format
-	    panels.push(plane_info['panel_ids'][i_panel]);
+	    if (i_panel < plane_info['panel_ids'].length) { // some planes don't have all their panels yet
+		panels.push(plane_info['panel_ids'][i_panel]);
+	    }
 	}
 	else {
 	    let panel_pos = panel_positions[i_panel]
