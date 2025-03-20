@@ -14,3 +14,5 @@ create table qc.planes (
 
 grant select on qc.planes to public;
 grant insert on qc.planes to mu2e_tracker_admin;
+grant insert on qc.planes to mu2e_tracker_writer;
+grant update on qc.planes to mu2e_tracker_writer;
