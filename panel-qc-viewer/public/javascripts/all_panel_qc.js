@@ -108,7 +108,7 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
     }
 
     // Define Data
-    single_panel_data[i_issue] = {name : single_pan_issue_names[i_issue],
+    single_panel_data[i_issue] = {name : single_pan_issue_names[i_issue] + " (Y = " + vals.filter(x => x===yes).length + ", N = " + vals.filter(x => x===no).length + ", ? = " + vals.filter(x => x === unknown).length + ")",
     				  x: panels,
     				  y: vals,
     				  mode:"markers",
