@@ -126,7 +126,7 @@ var layout = { title : {text: "Yes / No / Unknown Questions"},
  	       xaxis : xaxis,
  	       yaxis : yaxis,
  	       scroolZoom : true,
-	       colorway : yes_no_colors
+	       colorway : colors
 	     };
 Plotly.newPlot(has_data_vs_panel_plot, single_panel_data, layout);
 
