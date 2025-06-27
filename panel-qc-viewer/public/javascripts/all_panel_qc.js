@@ -88,7 +88,7 @@ var dead_channels_vs_panel_plot = document.getElementById('dead_channels_vs_pane
 Plotly.newPlot(dead_channels_vs_panel_plot, [dead_channels_data], layout);
 
 var dead_channel_definition = document.getElementById('dead_channel_definition');
-dead_channel_definition.innerHTML = "Dead channel definition: "+dead_ch_issues.slice(0,7).join(", ") + "\n" + dead_ch_issues.slice(8).join(", ");
+dead_channel_definition.innerHTML = "Dead channel definition: "+dead_ch_issues.slice(0,7).join(", ") + "\n" + dead_ch_issues.slice(7).join(", ");
 
 var single_channel_issue_vs_panel_plot = document.getElementById('single_channel_issue_vs_panel_plot');
 layout.title.text = "Channel-level QC vs Panel Number";
@@ -301,7 +301,7 @@ var dead_channels_vs_plane_plot = document.getElementById('dead_channels_vs_plan
 Plotly.newPlot(dead_channels_vs_plane_plot, [dead_channels_plane_data], layout);
 
 var dead_channel_definition_plane = document.getElementById('dead_channel_definition_plane');
-dead_channel_definition_plane.innerHTML = "Dead channel definition: "+dead_ch_issues.slice(0,7).join(", ") + "\n" + dead_ch_issues.slice(8).join(", ");
+dead_channel_definition_plane.innerHTML = "Dead channel definition: "+dead_ch_issues.slice(0,7).join(", ") + "\n" + dead_ch_issues.slice(7).join(", ");
 
 layout.yaxis.title.text = "Total Channels";
 layout.title.text = "Single-channel QC vs Plane Number";
