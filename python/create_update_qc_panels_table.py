@@ -1,7 +1,5 @@
 import argparse
 
-import time
-import numpy as np
 from datetime import date
 
 from qc_panels_columns import single_ch_issues
