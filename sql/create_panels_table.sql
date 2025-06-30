@@ -47,7 +47,8 @@ create table qc.panels (
 	intermittent_rates integer[] DEFAULT '{}',
 	disconnected_preamp_cal integer[] DEFAULT '{}',
 	disconnected_preamp_hv integer[] DEFAULT '{}',
-	kapton_washers integer[] DEFAULT '{}'
+	kapton_washers integer[] DEFAULT '{}',
+	preamp_amb_lv_short integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
