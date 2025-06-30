@@ -165,7 +165,10 @@ const allPlaneInfo = await plane_response.json();
 //console.log(allPlaneInfo)
 var planes = Array(allPlaneInfo.length)
 var single_channel_n_data_plane = Array(single_ch_issues.length)
-var single_panel_data_plane = Array(2*single_pan_issues.length) // 2* because pass and fail
+var single_panel_issue_numbers = Array(single_pan_issues.length); // needed to set the y-axis labels later
+var single_panel_data_plane_x = Array();
+var single_panel_data_plane_y = Array();
+var single_panel_data_plane_z = Array();
 
 for (let i_issue = 0; i_issue < single_ch_issues.length; ++i_issue) {
     var n_issue = Array(allPlaneInfo.length);
@@ -211,6 +214,7 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
     var passes = Array(allPanelInfo.length);
     var fails = Array(allPanelInfo.length);
     var issue = single_pan_issues[i_issue];
+    single_panel_issue_numbers[i_issue] = i_issue;
 
     for (let i_plane = 0; i_plane < planes.length; i_plane++) {
 	passes[i_plane] = 0;
@@ -225,6 +229,8 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
 		if (issue == 'max_erf_fit') {
 		    if (panel_info[issue].length != 0) {
 			passes[i_plane] += 1;
+			single_panel_data_plane_x.push(planes[i_plane]);
+			single_panel_data_plane_y.push(i_issue);//single_pan_issue_names[i_issue]);
 		    }
 		    else {
 			fails[i_plane] += 1;
@@ -233,6 +239,8 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
 		else {
 		    if (panel_info[issue] == true) {
 			passes[i_plane] += 1;
+			single_panel_data_plane_x.push(planes[i_plane]);
+			single_panel_data_plane_y.push(i_issue);;
 		    }
 		    if (panel_info[issue] == false) {
 			fails[i_plane] += 1;
@@ -246,36 +254,13 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
 			panel_info['short_wires'].length != 0) {
 			
 			passes[i_plane] += 1;
+			single_panel_data_plane_x.push(planes[i_plane]);
+			single_panel_data_plane_y.push(i_issue);//single_pan_issue_names[i_issue]);
 		    }
 		}
 	    }
 	}
     }
-
-    // Define Data
-    let barwidth = 0.8/single_pan_issue_names.length;
-    let offset = -(barwidth/2)*single_pan_issue_names.length + (i_issue)*(barwidth);
-    single_panel_data_plane[2*i_issue] = {name : single_pan_issue_names[i_issue] + " yes",
-					  x: planes,
-					  y: passes,
-					  mode:"markers",
-					  type:"bar",
-					  text: passes.map(String),
-					  textposition: 'auto',
-					  width : barwidth,
-					  offset : offset
-					 }
-    single_panel_data_plane[2*i_issue+1] = {name : single_pan_issue_names[i_issue] + " no",
-					    x: planes,
-					    y: fails,
-					    mode:"markers",
-					    type:"bar",
-					    text: fails.map(String),
-					    textposition: 'auto',
-					    base : passes,
-					    width: barwidth,
-					    offset : offset
-					   }
 }
 
 var dead_channels_plane_data = {name : 'total',
@@ -310,18 +295,45 @@ Plotly.newPlot(single_channel_issue_vs_plane_plot, single_channel_n_data_plane, 
 
 var has_data_vs_plane_plot = document.getElementById('has_data_vs_plane_plot');
 var xaxis = {title : {text : 'plane number'}, tickmode : "linear", tick0 : 0.0, dtick : 1.0};
-var yaxis = {title : {text : 'Number of panels in plane'}, tick0 : 0.0, dtick : 1, range : [0, 7] };
+var yaxis = {title : {text : ''},
+	     tickmode: "array",
+             tickvals: single_panel_issue_numbers,
+             ticktext: single_pan_issue_names
+	    }
 
 let better_grid_lines = Array(planes.length+1);
 for (let i_grid_line = 0; i_grid_line < better_grid_lines.length; ++i_grid_line) {
     better_grid_lines[i_grid_line] = {type: 'line', x0: -0.5 + i_grid_line, y0: 0.0, x1: -0.5 + i_grid_line, y1: 7, line:{ color: 'rgba(0, 0, 0, 0.1)', width: 2} };
 }
-var layout = { title : {text: "Number of panels in plane that..."},
-	       xaxis : xaxis,
-	       yaxis : yaxis,
-//	       barmode : 'stack',
+var layout = { title : {text: "Number of panels in plane that passed tests"},
 	       scroolZoom : true,
-	       shapes: better_grid_lines,
-	       colorway : yes_no_colors
-	     };
-Plotly.newPlot(has_data_vs_plane_plot, single_panel_data_plane, layout);
+	       xaxis : xaxis,
+	       yaxis: yaxis,
+	       margin : { l: 250 },
+	     }
+
+var single_panel_issue_plane_summary_plot = { name : "Single Panel Issue Plane Summary Plot",
+					      x: single_panel_data_plane_x,
+					      y: single_panel_data_plane_y,
+					      type:"histogram2d",
+					      autobinx: false,
+					      xbins: {
+						  start: 0.5,
+						  end: allPlaneInfo.length,
+						  size: 1
+					      },
+					      autobiny: false,
+					      ybins: {
+						  start: -0.5,
+						  end: single_pan_issues.length-1,
+						  size: 1
+					      },
+					      showscale : false,
+					      colorscale : 'Hot',
+					      texttemplate: '%{text}%{z}', // Display text label and z value
+					      textfont: {
+						  size: 12
+					      }
+					    }
+
+Plotly.newPlot(has_data_vs_plane_plot, [single_panel_issue_plane_summary_plot], layout);
