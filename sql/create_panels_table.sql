@@ -37,7 +37,8 @@ create table qc.panels (
 	survey_hole_problem_mid BOOLEAN,
 	survey_hole_problem_cal BOOLEAN,
 	kapton_dots integer[] DEFAULT '{}',
-	drac_id varchar
+	drac_id varchar,
+	bad_calibration_pulses integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
