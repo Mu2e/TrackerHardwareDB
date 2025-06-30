@@ -46,7 +46,8 @@ create table qc.panels (
 	loose_hv_anode integer[] DEFAULT '{}',
 	intermittent_rates integer[] DEFAULT '{}',
 	disconnected_preamp_cal integer[] DEFAULT '{}',
-	disconnected_preamp_hv integer[] DEFAULT '{}'
+	disconnected_preamp_hv integer[] DEFAULT '{}',
+	kapton_washers integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
