@@ -48,7 +48,8 @@ create table qc.panels (
 	disconnected_preamp_cal integer[] DEFAULT '{}',
 	disconnected_preamp_hv integer[] DEFAULT '{}',
 	kapton_washers integer[] DEFAULT '{}',
-	preamp_amb_lv_short integer[] DEFAULT '{}'
+	preamp_amb_lv_short integer[] DEFAULT '{}',
+	cu_clips_installed BOOLEAN,
 );
 
 grant select on qc.panels to public;
