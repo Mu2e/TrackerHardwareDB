@@ -1,9 +1,7 @@
-import os
 import argparse
 
 import time
 import numpy as np
-import pandas as pd
 from datetime import date
 
 from qc_panels_columns import single_ch_issues
