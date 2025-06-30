@@ -1,6 +1,6 @@
 export function draw_repairs_table(repairs_table_info, over_table, add_col='') {
 
-    var cols = ["date_uploaded", "comment", "column_changed", "old_value", "new_value"];
+    var cols = ["date_uploaded", "uploaded_by", "comment", "column_changed", "old_value", "new_value"];
     if (add_col != "") {
 	cols.unshift(add_col)
     }
