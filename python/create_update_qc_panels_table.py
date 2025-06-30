@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from datetime import date
 
-all_columns=['missing_straws', 'high_current_wires', 'blocked_straws', 'sparking_wires', 'no_hv_straw_hv', 'no_hv_straw_cal', 'missing_omega_pieces', 'short_wires', 'missing_anode', 'missing_cathode', 'missing_wires', 'loose_preamp_amb_connections', 'low_anode_cathode_resistances', 'disconnected_preamps', 'patched_straws', 'loose_preamp_anode_connections', 'suspicious_preamp_thresholds', 'short_omega_pieces', 'kapton_dots' ]
+from qc_panels_columns import single_ch_issues
 
 parser = argparse.ArgumentParser(
                     prog='create_update_qc_panels_table.py',
@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('--panel_id', required=True)
 parser.add_argument('--comment', required=True)
-for column in all_columns:
+for column in single_ch_issues:
     parser.add_argument('--new_'+column, nargs='*', help='Reset the '+column+' column to these straw numbers')
     parser.add_argument('--add_'+column, nargs='*', help='Add these straw numbers to the '+column+' column')
     parser.add_argument('--remove_'+column, nargs='*', help='Remove these straw numbers from the '+column+' column')
@@ -40,7 +40,7 @@ comment=args.comment
 all_channels = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95"]
 
 # Check that we don't have new_ defined as well as add_ or removed_
-for column in all_columns:
+for column in single_ch_issues:
     if (dict_args['new_'+column] != None and (dict_args['add_'+column] != None or dict_args['remove_'+column] != None)):
         print("ERROR: Cannot have both new_"+column+" and add_"+column+" or remove_"+column+" defined.")
         print("new_"+column+": "+', '.join(dict_args['new_'+column]))
@@ -62,7 +62,7 @@ if args.append:
     opts = 'a'
 update_sql_file = open(outfilename, opts)
 update_sql_file.write("\n\n")
-for column in all_columns:
+for column in single_ch_issues:
     # if there is any change in this column
     if (dict_args['new_'+column] != None or dict_args['add_'+column] != None or dict_args['remove_'+column] != None):
         # get the old values from qc.panels and create a new row in repairs.panels
