@@ -41,7 +41,9 @@ create table qc.panels (
 	bad_calibration_pulses integer[] DEFAULT '{}',
 	bad_jumper_dmb_connection integer[] DEFAULT '{}',
 	bad_dmb_channel_connection integer[] DEFAULT '{}',
-	unable_to_meet_lv_thresholds integer[] DEFAULT '{}'
+	unable_to_meet_lv_thresholds integer[] DEFAULT '{}',
+	loose_cal_anode integer[] DEFAULT '{}',
+	loose_hv_anode integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
