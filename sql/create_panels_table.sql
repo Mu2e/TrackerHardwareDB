@@ -39,7 +39,8 @@ create table qc.panels (
 	kapton_dots integer[] DEFAULT '{}',
 	drac_id varchar,
 	bad_calibration_pulses integer[] DEFAULT '{}',
-	bad_jumper_dmb_connection integer[] DEFAULT '{}'
+	bad_jumper_dmb_connection integer[] DEFAULT '{}',
+	bad_dmb_channel_connection integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
