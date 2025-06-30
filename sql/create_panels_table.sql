@@ -44,7 +44,9 @@ create table qc.panels (
 	unable_to_meet_lv_thresholds integer[] DEFAULT '{}',
 	loose_cal_anode integer[] DEFAULT '{}',
 	loose_hv_anode integer[] DEFAULT '{}',
-	intermittent_rates integer[] DEFAULT '{}'
+	intermittent_rates integer[] DEFAULT '{}',
+	disconnected_preamp_cal integer[] DEFAULT '{}',
+	disconnected_preamp_hv integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;
