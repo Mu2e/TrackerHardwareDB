@@ -50,6 +50,7 @@ create table qc.panels (
 	kapton_washers integer[] DEFAULT '{}',
 	preamp_amb_lv_short integer[] DEFAULT '{}',
 	cu_clips_installed BOOLEAN,
+	have_traveler BOOLEAN DEFAULT false,
 );
 
 grant select on qc.panels to public;

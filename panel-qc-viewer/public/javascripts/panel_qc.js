@@ -65,4 +65,8 @@ showPanelButton.addEventListener('click', async function () {
     else {
 	output = "Input must be a number";
     }
+
+
+    var img_traveler = document.getElementById('img_traveler');
+    img_traveler.src =  "images/travelers/MN" + panel_number.toString().padStart(3,'0') + "_Traveler.pdf";
 });
