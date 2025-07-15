@@ -1,7 +1,7 @@
 import { single_channel_issues } from './single_channel_issues.js'
 import { single_panel_issues, single_panel_issue_names } from './single_panel_issues.js'
 
-export function plot_panel_qc(panel_info, straw_status_plot, position="") {
+export function plot_panel_qc(panel_info, straw_status_plot, summary_table, position="") {
 
     const single_ch_issues = single_channel_issues(); // the rest to be added
 
@@ -134,19 +134,48 @@ export function plot_panel_qc(panel_info, straw_status_plot, position="") {
     const single_pan_issues = single_panel_issues();
     const single_pan_issue_names = single_panel_issue_names();
 
+    let emojii_yes = 9989;
+    let emojii_no = 10060;
+    let emojii_unknown = 10068;
+
+    // clear previous table
+    while (summary_table.firstChild) {
+	summary_table.removeChild(summary_table.lastChild);
+    }
+
+    var table = document.createElement('TABLE');
+    table.border = '1';
+    var tableBody = document.createElement('TBODY');
+    table.appendChild(tableBody);
+
+    var tr1 = document.createElement('TR');
+    tableBody.appendChild(tr1);
+    tr1.border = '1'
+    var tr2 = document.createElement('TR');
+    tableBody.appendChild(tr2);
+    tr2.border = '1'
+
+    // two rows: row 1 = issue name, row 2= results
+    // columns are the individual issues
     for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
 	var issue = single_pan_issues[i_issue];
-	output += "\n\t " + single_pan_issue_names[i_issue] + " ";
+	var issue_name = single_pan_issue_names[i_issue];
+	var emojii_result = emojii_unknown;
+	output += "\n\t " + issue_name + " ";
 	if (this_panel_issues[issue] != null) {
 	    if (issue != 'max_erf_fit') {
 		output += this_panel_issues[issue];
+		if (this_panel_issues[issue] == true) { emojii_result = emojii_yes; }
+		else if (this_panel_issues[issue] == false) { emojii_result = emojii_no; }
 	    }
 	    else {
 		var maxerf_risetime_filenames = this_panel_issues["maxerf_risetime_filenames"];
 		if (maxerf_risetime_filenames.length == 0) {
 		    output += "none";
+		    emojii_result = emojii_no;
 		}
 		else {
+		    emojii_result = emojii_yes;
 		    for (let i_filename = 0; i_filename < maxerf_risetime_filenames.length; ++i_filename) {
 			output += maxerf_risetime_filenames[i_filename];
 			if (i_filename < maxerf_risetime_filenames.length-1) {
@@ -161,15 +190,32 @@ export function plot_panel_qc(panel_info, straw_status_plot, position="") {
 		if (this_panel_issues['high_current_wires'].length != 0 ||
 		    this_panel_issues['sparking_wires'].length != 0 ||
 		    this_panel_issues['short_wires'].length != 0) {
-
+		    
 		    output += "yes";
+		    emojii_result = emojii_yes;
 		}
 	    }
 	    else {
 		output += "unknown";
+		emojii_result = emojii_unknown;
 	    }
 	}
+
+	var td1 = document.createElement('TD');
+	td1.style.border = "1px solid #000"
+	td1.appendChild(document.createTextNode(issue_name));
+	td1.style.textAlign = "center";
+	td1.style.borderBottomWidth = "1px"
+	tr1.appendChild(td1)
+
+	var td2 = document.createElement('TD');
+	td2.style.border = "1px solid #000"
+	td2.appendChild(document.createTextNode(String.fromCodePoint(emojii_result)));
+	td2.style.textAlign = "center";
+	td2.style.borderBottomWidth = "1px"
+	tr2.appendChild(td2)
     }
+    summary_table.append(table);
 
     // Output the DRAC ID
     output += "\n\t DRAC ID = " + this_panel_issues['drac_id'];

@@ -24,7 +24,8 @@ showPanelButton.addEventListener('click', async function () {
 	}
 	else {
 	    straw_status_plot = document.getElementById('straw_status_plot');
-	    var returned_output = plot_panel_qc(panel_info, straw_status_plot);
+	    let summary_table = document.getElementById('summary');
+	    var returned_output = plot_panel_qc(panel_info, straw_status_plot, summary_table);
 	    output += returned_output;
 
 	}

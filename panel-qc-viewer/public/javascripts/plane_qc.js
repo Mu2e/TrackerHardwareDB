@@ -70,7 +70,9 @@ showPlaneButton.addEventListener('click', async function () {
 		    }
 		    var plot_name = 'panel'+(i_panel+1).toString()+'_plot';
 		    var straw_status_plot = document.getElementById(plot_name);
-		    var returned_output = plot_panel_qc(panel_info, straw_status_plot, position);
+		    var summary_name = 'panel'+(i_panel+1).toString()+'_summary';
+		    var summary = document.getElementById(summary_name);
+		    var returned_output = plot_panel_qc(panel_info, straw_status_plot, summary,position);
 		    output += returned_output + "\n\n";
 		}
 	    }
