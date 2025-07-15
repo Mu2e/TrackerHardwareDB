@@ -161,14 +161,14 @@ export function plot_panel_qc(panel_info, straw_status_plot, summary_table, posi
 	var issue = single_pan_issues[i_issue];
 	var issue_name = single_pan_issue_names[i_issue];
 	var emojii_result = emojii_unknown;
-	output += "\n\t " + issue_name + " ";
 	if (this_panel_issues[issue] != null) {
 	    if (issue != 'max_erf_fit') {
-		output += this_panel_issues[issue];
+	//	output += this_panel_issues[issue]; // don't need to write this now
 		if (this_panel_issues[issue] == true) { emojii_result = emojii_yes; }
 		else if (this_panel_issues[issue] == false) { emojii_result = emojii_no; }
 	    }
 	    else {
+		output += "\n\t Fe55 data files: "; // stll want to write out Fe55 data file names
 		var maxerf_risetime_filenames = this_panel_issues["maxerf_risetime_filenames"];
 		if (maxerf_risetime_filenames.length == 0) {
 		    output += "none";
@@ -191,12 +191,11 @@ export function plot_panel_qc(panel_info, straw_status_plot, summary_table, posi
 		    this_panel_issues['sparking_wires'].length != 0 ||
 		    this_panel_issues['short_wires'].length != 0) {
 		    
-		    output += "yes";
+//		    output += "yes";
 		    emojii_result = emojii_yes;
 		}
 	    }
 	    else {
-		output += "unknown";
 		emojii_result = emojii_unknown;
 	    }
 	}
