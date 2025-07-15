@@ -126,8 +126,8 @@ for root, dirs, files in os.walk(traveler_dir):
 
 
 # Want to do this after going through all travelers
-bash_script.write("git commit -m \"adding travelers\"")
-bash_script.write("git push")
+bash_script.write("git commit -m \"adding travelers\"\n")
+bash_script.write("git push\n")
 
 
 print("Done!")
