@@ -33,6 +33,18 @@ showPlaneButton.addEventListener('click', async function () {
 	    if (panels.length == 0) {
 		output += " no panels";
 	    }
+	    else {
+		// Write the panel numbers
+		output += "Panels: ";
+		for (let i_panel = 0; i_panel < panels.length; ++i_panel) {
+		    var panel_number = panels[i_panel]
+		    output += panel_number;
+		    if (i_panel != panels.length-1) {
+			output += ", ";
+		    }
+		}
+		output += "\n\n";
+	    }
 
 	    for (let i_panel = 0; i_panel < panels.length; ++i_panel) {
 		var panel_number = panels[i_panel]

@@ -11,7 +11,8 @@ create table repairs.panels (
 	old_value text,
 	new_value text,
 	date_uploaded date,
-	comment text
+	comment text,
+	uploaded_by name DEFAULT current_user
 );
 
 create table repairs.planes (
@@ -21,7 +22,8 @@ create table repairs.planes (
 	old_value text,
 	new_value text,
 	date_uploaded date,
-	comment text
+	comment text,
+	uploaded_by name DEFAULT current_user
 );
 
 grant select on repairs.panels to public;

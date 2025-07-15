@@ -37,7 +37,20 @@ create table qc.panels (
 	survey_hole_problem_mid BOOLEAN,
 	survey_hole_problem_cal BOOLEAN,
 	kapton_dots integer[] DEFAULT '{}',
-	drac_id varchar
+	drac_id varchar,
+	bad_calibration_pulses integer[] DEFAULT '{}',
+	bad_jumper_dmb_connection integer[] DEFAULT '{}',
+	bad_dmb_channel_connection integer[] DEFAULT '{}',
+	unable_to_meet_lv_thresholds integer[] DEFAULT '{}',
+	loose_cal_anode integer[] DEFAULT '{}',
+	loose_hv_anode integer[] DEFAULT '{}',
+	intermittent_rates integer[] DEFAULT '{}',
+	disconnected_preamp_cal integer[] DEFAULT '{}',
+	disconnected_preamp_hv integer[] DEFAULT '{}',
+	kapton_washers integer[] DEFAULT '{}',
+	preamp_amb_lv_short integer[] DEFAULT '{}',
+	cu_clips_installed BOOLEAN,
+	have_traveler BOOLEAN DEFAULT false,
 );
 
 grant select on qc.panels to public;
