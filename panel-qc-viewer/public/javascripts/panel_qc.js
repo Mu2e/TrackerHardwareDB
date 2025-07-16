@@ -54,8 +54,7 @@ showPanelButton.addEventListener('click', async function () {
     }
     document.getElementById("measurement_info").innerHTML = measurement_output;
     
-    // Now do the table
-
+    // Now do the repairs table
     if (!isNaN(panel_number)) {
 	const repairs_table_response = await fetch('getPanelRepairs/'+panel_number);
 	const repairs_table_info = await repairs_table_response.json();
@@ -68,6 +67,39 @@ showPanelButton.addEventListener('click', async function () {
     }
 
 
+    // Add traveler image
     var img_traveler = document.getElementById('img_traveler');
     img_traveler.src =  "images/travelers/MN" + panel_number.toString().padStart(3,'0') + "_Traveler.pdf";
+
+    // Add FNAL Planes DB section
+    let fnal_plane_db_options = document.getElementById("fnal_plane_db_file_select");
+    const fnal_plane_db_response = await fetch('getPanelFromFNALPlanesDB/'+panel_number);
+    const fnal_plane_db_panel_info = await fnal_plane_db_response.json();
+    if (fnal_plane_db_panel_info.length>0) {
+	for (let i_row = 0; i_row < fnal_plane_db_panel_info.length; ++i_row) {
+	    var this_panel_fnal_plane_db = fnal_plane_db_panel_info[i_row]
+	    var file_name = this_panel_fnal_plane_db["file_name"];
+	    const newOption = document.createElement('option');
+	    newOption.textContent = file_name;
+	    newOption.value = file_name;
+	    fnal_plane_db_options.appendChild(newOption);
+	}
+    }
+
+    fnal_plane_db_options.addEventListener('change', (event) => {
+	let file_contents_div = document.getElementById('fnal_plane_db_file_contents');
+	var file_contents = "error retrieving file contents";
+	for (let i_row = 0; i_row < fnal_plane_db_panel_info.length; ++i_row) {
+	    var this_panel_fnal_plane_db = fnal_plane_db_panel_info[i_row]
+	    var file_name = this_panel_fnal_plane_db["file_name"];
+	    if (file_name == fnal_plane_db_options.value) {
+		file_contents = this_panel_fnal_plane_db["file_contents"];
+		break;
+	    }
+	}
+	file_contents_div.textContent = file_contents;
+	console.log("Value = " + fnal_plane_db_options.value);
+    })
+
+
 });
