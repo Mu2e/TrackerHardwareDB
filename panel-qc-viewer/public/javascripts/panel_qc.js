@@ -24,7 +24,8 @@ showPanelButton.addEventListener('click', async function () {
 	}
 	else {
 	    straw_status_plot = document.getElementById('straw_status_plot');
-	    var returned_output = plot_panel_qc(panel_info, straw_status_plot);
+	    let summary_table = document.getElementById('summary');
+	    var returned_output = plot_panel_qc(panel_info, straw_status_plot, summary_table);
 	    output += returned_output;
 
 	}
@@ -53,8 +54,7 @@ showPanelButton.addEventListener('click', async function () {
     }
     document.getElementById("measurement_info").innerHTML = measurement_output;
     
-    // Now do the table
-
+    // Now do the repairs table
     if (!isNaN(panel_number)) {
 	const repairs_table_response = await fetch('getPanelRepairs/'+panel_number);
 	const repairs_table_info = await repairs_table_response.json();
@@ -67,6 +67,49 @@ showPanelButton.addEventListener('click', async function () {
     }
 
 
+    // Add traveler image
     var img_traveler = document.getElementById('img_traveler');
     img_traveler.src =  "images/travelers/MN" + panel_number.toString().padStart(3,'0') + "_Traveler.pdf";
+
+    // Add FNAL Planes DB section
+    let fnal_plane_db_options = document.getElementById("fnal_plane_db_file_select");
+    // clear previous options
+    while (fnal_plane_db_options.firstChild) {
+	fnal_plane_db_options.removeChild(fnal_plane_db_options.lastChild);
+    }
+    let file_contents_div = document.getElementById('fnal_plane_db_file_contents');
+    file_contents_div.textContent = "";
+    
+    const fnal_plane_db_response = await fetch('getPanelFromFNALPlanesDB/'+panel_number);
+    const fnal_plane_db_panel_info = await fnal_plane_db_response.json();
+    if (fnal_plane_db_panel_info.length>0) {
+	for (let i_row = 0; i_row < fnal_plane_db_panel_info.length; ++i_row) {
+	    var this_panel_fnal_plane_db = fnal_plane_db_panel_info[i_row]
+	    // If there is no content in the file, ignore it
+	    if (this_panel_fnal_plane_db["file_contents"] == "\"\"") {
+		continue;
+	    }
+	    var file_name = this_panel_fnal_plane_db["file_name"];
+	    const newOption = document.createElement('option');
+	    newOption.textContent = file_name + " (last modified: " + this_panel_fnal_plane_db["last_modified"].substring(0,10) + ")";
+	    newOption.value = file_name;
+	    fnal_plane_db_options.appendChild(newOption);
+	}
+    }
+
+    fnal_plane_db_options.addEventListener('mouseup', (event) => {
+	let file_contents_div = document.getElementById('fnal_plane_db_file_contents');
+	var file_contents = "error retrieving file contents";
+	for (let i_row = 0; i_row < fnal_plane_db_panel_info.length; ++i_row) {
+	    var this_panel_fnal_plane_db = fnal_plane_db_panel_info[i_row]
+	    var file_name = this_panel_fnal_plane_db["file_name"];
+	    if (file_name == fnal_plane_db_options.value) {
+		file_contents = this_panel_fnal_plane_db["file_contents"];
+		break;
+	    }
+	}
+	file_contents_div.textContent = file_contents;
+    })
+
+
 });

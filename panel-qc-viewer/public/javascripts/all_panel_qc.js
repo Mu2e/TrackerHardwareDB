@@ -96,7 +96,9 @@ yaxis.title.text = 'no. of channels with issues';
 layout.shapes = Array();
 Plotly.newPlot(single_channel_issue_vs_panel_plot, single_channel_n_data, layout);
 
-
+var total_yes = Array(single_pan_issues.length);
+var total_no = Array(single_pan_issues.length);
+var total_unknown = Array(single_pan_issues.length);
 for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
     var vals = Array(allPanelInfo.length);
     var issue = single_pan_issues[i_issue];
@@ -134,7 +136,10 @@ for (let i_issue = 0; i_issue < single_pan_issues.length; ++i_issue) {
     }
 
     // Define Data
-    single_panel_data[i_issue] = {name : single_pan_issue_names[i_issue] + " (Y = " + vals.filter(x => x===yes).length + ", N = " + vals.filter(x => x===no).length + ", ? = " + vals.filter(x => x === unknown).length + ")",
+    total_yes[i_issue] = vals.filter(x => x===yes).length;
+    total_no[i_issue] = vals.filter(x => x===no).length;
+    total_unknown[i_issue] = vals.filter(x => x===unknown).length;
+    single_panel_data[i_issue] = {name : single_pan_issue_names[i_issue] + " (Y = " + total_yes[i_issue] + ", N = " + total_no[i_issue] + ", ? = " + total_unknown[i_issue] + ")",
     				  x: panels,
     				  y: vals,
     				  mode:"markers",
@@ -155,6 +160,132 @@ var layout = { title : {text: "Yes / No / Unknown Questions"},
 	       colorway : colors
 	     };
 Plotly.newPlot(has_data_vs_panel_plot, single_panel_data, layout);
+
+const panelFilter = document.getElementById('panel_filter');
+panelFilter.addEventListener('keyup', async function () {
+    // Declare variables
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("panel_filter");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("panel_level_qc_table");
+    tr = table.getElementsByTagName("TR");
+
+    // Loop through all table rows after the headings, and hide those who don't match the search query
+    for (i = 2; i < tr.length; i++) { // skip the first two rows
+	td = tr[i].getElementsByTagName("TD")[0]; // check against the first column
+	if (td) {
+	    txtValue = td.textContent || td.innerText;
+	    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+		tr[i].style.display = "";
+	    } else {
+		tr[i].style.display = "none";
+	    }
+	}
+    }
+});
+
+var over_table = document.getElementById("panel_level_qc_table");
+var table = document.createElement('TABLE');
+table.border = '1';
+
+var tableBody = document.createElement('TBODY');
+table.appendChild(tableBody);
+
+let emojii_yes = String.fromCodePoint(9989);
+let emojii_no = String.fromCodePoint(10060);
+let emojii_unknown = String.fromCodePoint(10068);
+
+// rows are panels
+for (let i = 0; i < panels.length+2; i++) { // +2 because we want a header row, and a totals row
+    let panel_number = 0;
+    var panel_info;
+    if (i>1) {
+	panel_number = panels[i-2];
+	panel_info = allPanelInfo[panel_num_map.get(panel_number)];
+    }
+    
+    var tr = document.createElement('TR');
+    tableBody.appendChild(tr);
+    tr.border = '1'
+
+    // columns are issues
+    for (let j = 0; j < single_pan_issues.length+1; ++j) { // +1 because first column = panel_id
+	var panel_issue = "";
+	var panel_issue_name = ""
+	if (j>0) {
+	    panel_issue = single_pan_issues[j-1];
+	    panel_issue_name = single_pan_issue_names[j-1];
+	}
+	var td = document.createElement('TD');
+	//		td.width = '75';
+	td.style.border = "1px solid #000"
+	if (j == 0) { // first column = panel_id
+	    if (i == 0) {
+		td.appendChild(document.createTextNode("Panel ID"));
+		td.style.textAlign = "center";
+		td.style.borderBottomWidth = "2px";
+	    }
+	    else if (i == 1) {
+		td.appendChild(document.createTextNode("Totals"));
+		td.style.textAlign = "center";
+		td.style.borderBottomWidth = "2px";
+	    }
+	    else {
+		td.appendChild(document.createTextNode(String(panel_number)));
+		td.style.textAlign = "center";
+	    }
+	}
+	else {
+	    if (i == 0) { // first row = headings
+		td.appendChild(document.createTextNode(panel_issue_name));
+		td.style.textAlign = "center";
+		td.style.borderBottomWidth = "2px"
+	    }
+	    else if (i == 1) { // second row = totals
+		var string_to_write = emojii_yes + total_yes[j-1] + emojii_no + total_no[j-1] + emojii_unknown + total_unknown[j-1];
+		td.appendChild(document.createTextNode(string_to_write));
+		td.style.textAlign = "center";
+		td.style.borderBottomWidth = "2px"
+	    }
+	    else {
+		var string_to_write = emojii_unknown;
+		var result = panel_info[panel_issue];
+		if (result != null) {
+		    if (panel_issue != 'max_erf_fit') {
+			if (result == true) { string_to_write = emojii_yes; }
+			else if (result == false) { string_to_write = emojii_no; }
+		    }
+		    else { // this is 'max_erf_fit'
+			if (panel_info["maxerf_risetime_filenames"].length == 0) { // see if we have any Fe55 data files
+			    string_to_write = emojii_no;
+			}
+			else {
+			    string_to_write = emojii_yes;
+			}
+		    }
+		}
+		else { //we received a 'null'
+		    if (issue == 'hv_test_done') { // for hv_test_done, if we have information about sparking wires etc. then we can assume the test was done even if its unknown
+			if (this_panel_issues['high_current_wires'].length != 0 ||
+			    this_panel_issues['sparking_wires'].length != 0 ||
+			    this_panel_issues['short_wires'].length != 0) {
+
+			    string_to_write = emojii_yes;
+			}
+		    }
+		    else {
+			string_to_write = emojii_unknown;
+		    }
+		}
+
+		td.appendChild(document.createTextNode(string_to_write));
+		td.style.textAlign = "center";
+	    }
+	}
+	tr.appendChild(td);
+    }
+}
+over_table.appendChild(table);
 
 ////
 // Plane QC Summary

@@ -11,23 +11,28 @@ block content
        .col-2
          button#btnShowPanel.btn.btn-block.btn-info Show Panel
     .row
+       table#summary(style="width:1300px;height:100px;")
+    .row
        | Output:
        .bg-muted.text-body.rounded
-       pre#panel_info(style="width:1300px;height:200px;")
+       pre#panel_info(style="width:1300px;height:100px;")
        div#straw_status_plot(style="width:1300px;height:600px;")
-    h2 Traveler
-    .row
-       .col-6
-       embed#img_traveler(style="width:1300px;height:600px")
-
-    h2 Panel Measurements
-    .row
-      .col-6
-        pre#measurement_info(style="width:1300px;height:600px;")
     h2 History
     .row
          | Table of repair history
          table#panel_repairs_table(style="width:1300px;height:2px;")
+    h2 Traveler
+    .row
+       .col-6
+       embed#img_traveler(style="width:1300px;height:600px")
+    h2 FNAL Planes DB
+    .row
+       select#fnal_plane_db_file_select(style="width:200px")
+       div#fnal_plane_db_file_contents
+    h2 Panel Measurements
+    .row
+      .col-6
+        pre#measurement_info(style="width:1300px;height:600px;")
     h2 Verbose Output
     .row
         pre#log.
