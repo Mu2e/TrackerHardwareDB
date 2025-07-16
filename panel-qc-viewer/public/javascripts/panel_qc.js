@@ -84,7 +84,7 @@ showPanelButton.addEventListener('click', async function () {
 	    }
 	    var file_name = this_panel_fnal_plane_db["file_name"];
 	    const newOption = document.createElement('option');
-	    newOption.textContent = file_name;
+	    newOption.textContent = file_name + " (last modified: " + this_panel_fnal_plane_db["last_modified"].substring(0,10) + ")";
 	    newOption.value = file_name;
 	    fnal_plane_db_options.appendChild(newOption);
 	}
