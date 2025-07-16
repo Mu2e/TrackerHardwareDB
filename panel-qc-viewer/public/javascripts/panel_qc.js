@@ -73,6 +73,13 @@ showPanelButton.addEventListener('click', async function () {
 
     // Add FNAL Planes DB section
     let fnal_plane_db_options = document.getElementById("fnal_plane_db_file_select");
+    // clear previous options
+    while (fnal_plane_db_options.firstChild) {
+	fnal_plane_db_options.removeChild(fnal_plane_db_options.lastChild);
+    }
+    let file_contents_div = document.getElementById('fnal_plane_db_file_contents');
+    file_contents_div.textContent = "";
+    
     const fnal_plane_db_response = await fetch('getPanelFromFNALPlanesDB/'+panel_number);
     const fnal_plane_db_panel_info = await fnal_plane_db_response.json();
     if (fnal_plane_db_panel_info.length>0) {
@@ -90,7 +97,7 @@ showPanelButton.addEventListener('click', async function () {
 	}
     }
 
-    fnal_plane_db_options.addEventListener('change', (event) => {
+    fnal_plane_db_options.addEventListener('mouseup', (event) => {
 	let file_contents_div = document.getElementById('fnal_plane_db_file_contents');
 	var file_contents = "error retrieving file contents";
 	for (let i_row = 0; i_row < fnal_plane_db_panel_info.length; ++i_row) {
