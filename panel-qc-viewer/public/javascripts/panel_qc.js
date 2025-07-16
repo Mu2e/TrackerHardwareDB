@@ -78,6 +78,10 @@ showPanelButton.addEventListener('click', async function () {
     if (fnal_plane_db_panel_info.length>0) {
 	for (let i_row = 0; i_row < fnal_plane_db_panel_info.length; ++i_row) {
 	    var this_panel_fnal_plane_db = fnal_plane_db_panel_info[i_row]
+	    // If there is no content in the file, ignore it
+	    if (this_panel_fnal_plane_db["file_contents"] == "\"\"") {
+		continue;
+	    }
 	    var file_name = this_panel_fnal_plane_db["file_name"];
 	    const newOption = document.createElement('option');
 	    newOption.textContent = file_name;
@@ -98,7 +102,6 @@ showPanelButton.addEventListener('click', async function () {
 	    }
 	}
 	file_contents_div.textContent = file_contents;
-	console.log("Value = " + fnal_plane_db_options.value);
     })
 
 
