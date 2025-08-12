@@ -53,6 +53,8 @@ create table qc.panels (
 	have_traveler BOOLEAN DEFAULT false,
 	noisy_channels integer[] DEFAULT '{}',
 	no_coincidences integer[] DEFAULT '{}',
+	sparking_cal integer[] DEFAULT '{}',
+	cal_insertion_from_amb integer[] DEFAULT '{}',
 );
 
 grant select on qc.panels to public;
