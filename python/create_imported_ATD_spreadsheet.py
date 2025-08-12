@@ -89,7 +89,7 @@ conn = psycopg2.connect(database = "mu2e_tracker_prd",
 cur = conn.cursor()
 
 most_recent=0.
-print(csvfile)
+#print(csvfile)
 
 bash_script_name = 'update_qc_panels_from_ATD_spreadsheet.sh'
 bash_script = open(bash_script_name, 'w')
@@ -115,7 +115,7 @@ df[['Plane', 'Side']] = df['Production No.'].str.split(' ', n=1, expand=True)
 filled_csvfile="ATD_spreadsheet_filled.csv"
 df.to_csv(filled_csvfile, index=False);
 all_columns = df.columns.tolist()
-print(all_columns)
+#print(all_columns)
 
 # For the rest of the script, we don't need these columns
 # First remove rows with panel number and channel number that are NaNs
@@ -204,7 +204,7 @@ unaccounted_for_problems = df[(df['QC DB Issue'].isna()) & ((~df['Problem'].isna
 if len(unaccounted_for_problems) != 0:
     print(unaccounted_for_problems.head(20))
     print("ERROR: Some problems in the ATD spreadsheet do not have a defined equivalent in the QC DB (see above for list)")
-#    exit(1)
+    exit(1)
 grouped = df.groupby(['Panel', 'QC DB Issue'])
 #print(df.keys())
 #print(df.head(10))
