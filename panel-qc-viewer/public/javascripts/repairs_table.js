@@ -5,7 +5,7 @@ export function draw_repairs_table(repairs_table_info, over_table, add_col='') {
 	cols.unshift(add_col)
     }
 
-    while (over_table.firstChild) {
+    while (over_table.firstChild) { // delete the previous table
 	over_table.removeChild(over_table.lastChild);
     }
 

@@ -56,7 +56,9 @@ app.use('/getDracTestCols', require('./db/getDracTestCols'));
 app.use('/getDracTests', require('./db/getDracTests'));
 app.use('/getDracConfigs', require('./db/getDracConfigs'));
 
+app.use('/test', require('./routes/test'));
 
+app.use('/getPanelATDSpreadsheet', require('./db/getPanelATDSpreadsheet'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

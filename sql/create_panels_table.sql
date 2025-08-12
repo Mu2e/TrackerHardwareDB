@@ -51,6 +51,10 @@ create table qc.panels (
 	preamp_amb_lv_short integer[] DEFAULT '{}',
 	cu_clips_installed BOOLEAN,
 	have_traveler BOOLEAN DEFAULT false,
+	noisy_channels integer[] DEFAULT '{}',
+	no_coincidences integer[] DEFAULT '{}',
+	sparking_cal integer[] DEFAULT '{}',
+	cal_insertion_from_amb integer[] DEFAULT '{}',
 );
 
 grant select on qc.panels to public;

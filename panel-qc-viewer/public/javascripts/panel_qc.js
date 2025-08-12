@@ -71,6 +71,51 @@ showPanelButton.addEventListener('click', async function () {
     var img_traveler = document.getElementById('img_traveler');
     img_traveler.src =  "images/travelers/MN" + panel_number.toString().padStart(3,'0') + "_Traveler.pdf";
 
+    // Add ATD Spreadsheet info
+    if (!isNaN(panel_number)) {
+	const atd_spreadsheet_table_response = await fetch('getPanelATDSpreadsheet/'+panel_number);
+	const atd_spreadsheet_table_info = await atd_spreadsheet_table_response.json();
+//	console.log(atd_spreadsheet_table_info);
+	let col_names = Object.keys(atd_spreadsheet_table_info[0])
+//	console.log();
+	var over_table = document.getElementById("atd_spreadsheet_table");
+	while (over_table.firstChild) { // delete the previous table
+	    over_table.removeChild(over_table.lastChild);
+	}
+
+	var table = document.createElement('TABLE');
+	table.border = '1';
+
+	var tableBody = document.createElement('TBODY');
+	table.appendChild(tableBody);
+	for (var i = 0; i < atd_spreadsheet_table_info.length+1; i++) { // +1 for the title row
+	    var tr = document.createElement('TR');
+	    tableBody.appendChild(tr);
+	    tr.border = '1'
+
+	    for (var j = 0; j < col_names.length; j++) {
+		var td = document.createElement('TD');
+		//		td.width = '75';
+		td.style.border = "1px solid #000"
+		if (i == 0) {
+		    td.appendChild(document.createTextNode([col_names[j]]));
+		    td.style.textAlign = "center";
+		    td.style.borderBottomWidth = "2px"
+		}
+		else {
+		    var string_to_write = atd_spreadsheet_table_info[i-1][col_names[j]];
+		    td.appendChild(document.createTextNode(string_to_write));
+		}
+		tr.appendChild(td);
+	    }
+	}
+	over_table.appendChild(table);
+//	draw_atd_spreadsheet_table(atd_spreadsheet_table_info, over_table);
+    }
+    else {
+	output = "Input must be a number";
+    }
+
     // Add FNAL Planes DB section
     let fnal_plane_db_options = document.getElementById("fnal_plane_db_file_select");
     // clear previous options
