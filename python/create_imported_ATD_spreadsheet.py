@@ -79,7 +79,9 @@ ATD_to_DB_issue_dict = { "Patched straw" : "patched_straws",
                          "Sparking Wire Cal-side" : "sparking_cal",
                          "Intermittent Rates" : "intermittent_rates",
                          "Missing calpulse on DPT" : "bad_calibration_pulses",
-                         "No CAL Pulse Rates" : "bad_calibration_pulses"
+                         "No CAL Pulse Rates" : "bad_calibration_pulses",
+                         "Noise" : "noisy_channels",
+                         "No Coincidences" : "no_coincidences"
                         }
 
 # Connect to the DB to see what is already in there
@@ -217,7 +219,7 @@ for name, group in grouped:
         continue
     issue = name[1]
     # These are columns I still need to add
-    if issue in ['problem', "sparking_cal", "cal_insertion_from_amb"]:
+    if issue in ['problem']:
         print("TODO: Skipping issue "+issue+ " because it is not yet in QC DB")
         continue
 
