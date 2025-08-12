@@ -77,7 +77,9 @@ ATD_to_DB_issue_dict = { "Patched straw" : "patched_straws",
                          "Unable to meet LV thresholds" : "unable_to_meet_lv_thresholds",
                          "Missing anode pin" : "missing_anode",
                          "Sparking Wire Cal-side" : "sparking_cal",
-                         "Intermittent Rates" : "intermittent_rates"
+                         "Intermittent Rates" : "intermittent_rates",
+                         "Missing calpulse on DPT" : "bad_calibration_pulses",
+                         "No CAL Pulse Rates" : "bad_calibration_pulses"
                         }
 
 # Connect to the DB to see what is already in there
