@@ -7,8 +7,12 @@ import numpy as np
 from qc_panels_columns import single_ch_issues
 
 def usage():
-    print("Usage: python3 create_imported_ATD_spreadsheet.py ATD_spreadsheet.csv")
+    print("Usage: python3 create_imported_ATD_spreadsheet.py ATD_spreadsheet.csv YYYY_MM_DD")
+    print("where YYYY_MM_DD is the snapshot date")
     exit(1);
+
+def replace_problem_chars(string):
+    return string.replace(' ', '_').replace('.', '').replace('\'', '').replace("&", "and").replace("-", '').replace("(", '').replace(")", '').replace(":","_").replace(',', '_').replace('?','');
 
 def get_qc_db_panel_info(cur, panel_id, issue):
     query = 'SELECT '+ issue + ' FROM qc.panels WHERE panel_id='+panel_id+';'
@@ -24,7 +28,7 @@ def get_qc_db_panel_info(cur, panel_id, issue):
     # There should only be one row corresponding to a single panel and this function is for a single issue so return just the list of channel numbers
     return rows[0][0]
 
-if (len(os.sys.argv) != 2):
+if (len(os.sys.argv) != 3):
     usage()
 elif (os.sys.argv[1] == "-h" or os.sys.argv[1] == "--help"):
     usage()
@@ -33,6 +37,12 @@ csvfile=os.sys.argv[1]
 if (not os.path.exists(csvfile)):
     print("CSV file \"" + csvfile + "\" does not exist. Exiting...");
     exit(1);
+
+snapshot_date=os.sys.argv[2]
+if ("_" not in snapshot_date):
+    print("Format should be YYYY_MM_DD. Exiting...")
+    exit(1)
+
 
 # A dictionary to map the "Problem" in the ATD spreadsheet to the column name in qc.panels
 ATD_to_DB_issue_dict = { "Patched straw" : "patched_straws",
@@ -93,13 +103,24 @@ all_contents=[]
 pd.options.mode.copy_on_write = True
 df = pd.read_csv(csvfile)
 
-# First remove rows with panel number and channel number that are NaNs
-# TODO: add panel numbers in ATD to plane 6, side A (already built) and plane 36 and 17 (both sides)
-df = df.dropna(subset=['Panel', 'Channel', 'Problem'], how='all')
+# Do some proecessing that will also be useful when we copy the csv file to the database
+# Then, forward fill some columns because the original spreadsheet used merged cells
 df['Panel'] = df[['Panel']].ffill()
+df['Install No.'] = df[['Install No.']].ffill()
 df['Production No.'] = df[['Production No.']].ffill()
-df = df.drop(['Install No.', 'Unnamed: 9', 'Connected', 'Disonnected', 'Unnamed: 12'], axis=1)
-df[['Plane', 'Side']] = df['Production No.'].str.split(' ', n=1, expand=True) # split plane number and side A/B
+# Split plane number and side A/B
+df[['Plane', 'Side']] = df['Production No.'].str.split(' ', n=1, expand=True)
+
+# Now save this version for importing later
+filled_csvfile="ATD_spreadsheet_filled.csv"
+df.to_csv(filled_csvfile, index=False);
+all_columns = df.columns.tolist()
+print(all_columns)
+
+# For the rest of the script, we don't need these columns
+# First remove rows with panel number and channel number that are NaNs
+df = df.dropna(subset=['Panel', 'Channel', 'Problem'], how='all')
+df = df.drop(['Install No.', 'Connected', 'Disonnected', 'Unnamed: 11'], axis=1)
 
 #pd.set_option('display.width', None)
 #print(df.head())
@@ -183,7 +204,7 @@ unaccounted_for_problems = df[(df['QC DB Issue'].isna()) & ((~df['Problem'].isna
 if len(unaccounted_for_problems) != 0:
     print(unaccounted_for_problems.head(20))
     print("ERROR: Some problems in the ATD spreadsheet do not have a defined equivalent in the QC DB (see above for list)")
-    exit(1)
+#    exit(1)
 grouped = df.groupby(['Panel', 'QC DB Issue'])
 #print(df.keys())
 #print(df.head(10))
@@ -214,9 +235,12 @@ for name, group in grouped:
         channels_in_qc_db_not_in_atd = list(set(qc_db_channels) - set(atd_channels))
         print("!!! MN"+panel_id, issue, "channels are NOT the same (ATD: " + str(atd_channels) + ", QC DB: " + str(qc_db_channels) + ")");
         user_check = ""
-        while user_check not in ['y', 'n', 'Y', 'N']:
+        while user_check not in ['y', 'n', 'Y', 'N', 's', 'S']:
             user_check = input("I will make the following changes to the QC DB:  Add " + str(channels_in_atd_not_in_qc_db) + ". Remove: " + str(channels_in_qc_db_not_in_atd) + ". Check the Panel QC webpage and look at the traveler for panel "+panel_id+". Are these changes OK (y/n)? ")
 
+        if user_check in ['s', 'S']:
+            break
+        
         if user_check in ['y', 'Y']:
             bash_script.write("python3 create_update_qc_panels_table.py --append=True --panel_id " + str(int(panel_id)))
             if (len(channels_in_qc_db_not_in_atd) > 0):
@@ -255,6 +279,32 @@ for name, group in grouped:
 #        print("MN"+panel_id, issue, " channels are the same (ATD: " + str(atd_channels) + ", QC DB: " + str(qc_db_channels) + ")")
 #    break
 conn.close()
+
+#
+# Now store a copy of the ATD spreadsheet that we just read
+#
+create_sql_file = open('../sql/create_imported_ATD_spreadsheet.sql', 'w')
+create_sql_file.write("set role mu2e_tracker_admin;\n")
+create_sql_file.write("DROP TABLE test.ATD_spreadsheet_previous;\n"); # drop the previous table (needed to check differences between now and last time)
+create_sql_file.write("CREATE TABLE test.ATD_spreadsheet_previous AS SELECT * FROM test.ATD_spreadsheet;\n")
+create_sql_file.write("GRANT SELECT ON test.ATD_spreadsheet_previous TO public;\n");
+create_sql_file.write("DROP TABLE test.ATD_spreadsheet;\n"); # drop the current table, we will recreate it at the end
+table_name = "test.ATD_spreadsheet_"+snapshot_date
+create_sql_file.write("CREATE TABLE "+table_name+"(");#(row serial primary key");
+first_col=True
+for col in all_columns:
+    if not first_col:
+        create_sql_file.write(", "); # don't want to write a comma for the first column
+    else:
+        first_col=False # just seen the first row
+    create_sql_file.write(replace_problem_chars(col) + " text");
+create_sql_file.write(");\n");
+create_sql_file.write("\\copy "+table_name+" FROM \'"+filled_csvfile+"\' DELIMITER ',' CSV HEADER;\n");
+
+create_sql_file.write("grant select on "+table_name+" to public;\n");
+create_sql_file.write("grant insert on "+table_name+" to mu2e_tracker_admin;\n");
+create_sql_file.write("CREATE TABLE test.ATD_spreadsheet AS SELECT * FROM "+table_name+";\n")
+create_sql_file.write("GRANT SELECT ON test.ATD_spreadsheet TO public;")
 
 print("Done!")
 print("Now check " + bash_script_name + " looks OK and run it like this:")
