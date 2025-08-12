@@ -283,13 +283,14 @@ conn.close()
 #
 # Now store a copy of the ATD spreadsheet that we just read
 #
-create_sql_file = open('../sql/create_imported_ATD_spreadsheet.sql', 'w')
+sql_filename = '../sql/create_imported_ATD_spreadsheet.sql'
+create_sql_file = open(sql_filename, 'w')
 create_sql_file.write("set role mu2e_tracker_admin;\n")
-create_sql_file.write("DROP TABLE test.ATD_spreadsheet_previous;\n"); # drop the previous table (needed to check differences between now and last time)
-create_sql_file.write("CREATE TABLE test.ATD_spreadsheet_previous AS SELECT * FROM test.ATD_spreadsheet;\n")
-create_sql_file.write("GRANT SELECT ON test.ATD_spreadsheet_previous TO public;\n");
-create_sql_file.write("DROP TABLE test.ATD_spreadsheet;\n"); # drop the current table, we will recreate it at the end
-table_name = "test.ATD_spreadsheet_"+snapshot_date
+create_sql_file.write("DROP TABLE imported.ATD_spreadsheet_previous;\n"); # drop the previous table (needed to check differences between now and last time)
+create_sql_file.write("CREATE TABLE imported.ATD_spreadsheet_previous AS SELECT * FROM imported.ATD_spreadsheet;\n")
+create_sql_file.write("GRANT SELECT ON imported.ATD_spreadsheet_previous TO public;\n");
+create_sql_file.write("DROP TABLE imported.ATD_spreadsheet;\n"); # drop the current table, we will recreate it at the end
+table_name = "imported.ATD_spreadsheet_"+snapshot_date
 create_sql_file.write("CREATE TABLE "+table_name+"(");#(row serial primary key");
 first_col=True
 for col in all_columns:
@@ -303,9 +304,12 @@ create_sql_file.write("\\copy "+table_name+" FROM \'"+filled_csvfile+"\' DELIMIT
 
 create_sql_file.write("grant select on "+table_name+" to public;\n");
 create_sql_file.write("grant insert on "+table_name+" to mu2e_tracker_admin;\n");
-create_sql_file.write("CREATE TABLE test.ATD_spreadsheet AS SELECT * FROM "+table_name+";\n")
-create_sql_file.write("GRANT SELECT ON test.ATD_spreadsheet TO public;")
+create_sql_file.write("CREATE TABLE imported.ATD_spreadsheet AS SELECT * FROM "+table_name+";\n")
+create_sql_file.write("GRANT SELECT ON imported.ATD_spreadsheet TO public;")
 
 print("Done!")
 print("Now check " + bash_script_name + " looks OK and run it like this:")
 print(" . ./" + bash_script_name);
+
+print("Also check " + sql_filename + " looks OK and run it like this:")
+print(" psql -h ifdb11 -p 5459 mu2e_tracker_prd < " + sql_filename);
