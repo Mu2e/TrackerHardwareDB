@@ -156,6 +156,7 @@ for name, group in plane_grouped:
 #    print(qc_db_panel_ids)
     if qc_db_panel_ids != atd_panel_ids:
         print("!!! Plane "+str(plane_id) + " panel_ids are NOT the same (ATD: " + str(atd_panel_ids) + ", QC DB: " + str(qc_db_panel_ids) + ") !!!")
+        exit(1)
 #    else:
 #        print("Plane "+str(plane_id) + " panel_ids are the same (ATD: " + str(atd_panel_ids) + ", QC DB: " + str(qc_db_panel_ids) + ")")
     planes_checked.append(plane_id)
@@ -165,6 +166,7 @@ for name, group in plane_grouped:
 missing_planes = set(all_planes) - set(planes_checked)
 if (len(missing_planes)>0):
     print("!!! We are missing planes " + str(missing_planes))
+    exit(1)
 print("...Done!\n")
 
 # First get the panels with no issues and make sure that QC DB agrees
