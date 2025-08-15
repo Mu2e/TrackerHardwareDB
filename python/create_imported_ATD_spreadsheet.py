@@ -206,6 +206,13 @@ df['Channel'] = df[['Channel']].ffill()
 # ATD problems that map to the same issue (e.g. due to different capitalizations)
 df['QC DB Issue'] = df['Problem'].map(ATD_to_DB_issue_dict)
 
+# The disconnected_preamps is in the ATD spreadsheet as an additional YES/NO to each issue.
+# To make this script easier, we will add in new rows to the df for disconnected_preamps
+new_df = df[(df['Preamp connected to straw?'] == "NO")]
+#print(new_df[["Panel", "Channel", "Preamp connected to straw?"]])
+new_rows = pd.DataFrame({'QC DB Issue' : ['disconnected_preamps'] * len(new_df), 'Channel' : new_df['Channel'], 'Panel' : new_df['Panel']});
+df = pd.concat([df, new_rows], ignore_index=True)
+
 unaccounted_for_problems = df[(df['QC DB Issue'].isna()) & ((~df['Problem'].isna()) & (df['Problem'] != '-'))][['Problem', "QC DB Issue"]]
 if len(unaccounted_for_problems) != 0:
     print(unaccounted_for_problems.head(20))
