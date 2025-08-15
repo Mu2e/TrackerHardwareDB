@@ -55,6 +55,7 @@ create table qc.panels (
 	no_coincidences integer[] DEFAULT '{}',
 	sparking_cal integer[] DEFAULT '{}',
 	cal_insertion_from_amb integer[] DEFAULT '{}',
+	problem integer[] DEFAULT '{}'
 );
 
 grant select on qc.panels to public;

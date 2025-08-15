@@ -28,6 +28,9 @@ export function plot_panel_qc(panel_info, straw_status_plot, summary_table, posi
 	    this_panel_straws[this_panel_issue[j]] = 1;
 	}
 	total_issues = total_issues + this_panel_issue.length
+	if (the_issue == "problem") {
+	    the_issue = "undefined problem (check notes)";
+	}
 	var this_data = {
 	    name : the_issue,
 	    type : 'histogram',
@@ -119,6 +122,10 @@ export function plot_panel_qc(panel_info, straw_status_plot, summary_table, posi
 	    else {
 		output += ", ";
 	    }
+	    if (the_issue == "problem") {
+		the_issue = "undefined problem (check notes)";
+	    }
+
 	    output += this_panel_issue.length + " " + the_issue + " (";
 	    for (let i_channel = 0; i_channel < this_panel_issue.length; ++i_channel) {
 		output += "#" + this_panel_issue[i_channel];
