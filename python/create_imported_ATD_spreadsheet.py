@@ -292,8 +292,14 @@ for name, group in grouped:
                     print("This will result in the QC DB containing [" + ", ".join(map(str,final_qc_db_channels)) + "]")
                     user_check2 = input("Is this right (y/n)? ")
 
-                bash_script.write(" --add_" + issue + " " + " ".join(map(str,channels_to_add)))
-                bash_script.write(" --remove_" + issue + " " + " ".join(map(str,channels_to_remove)))
+                user_comment = input ("Please add a comment explaining this change: ")
+
+                bash_script.write("python3 create_update_qc_panels_table.py --append=True --panel_id " + str(int(panel_id)))
+                if (len(channels_to_add)>0):
+                    bash_script.write(" --add_" + issue + " " + " ".join(map(str,channels_to_add)))
+                if (len(channels_to_remove)>0):
+                    bash_script.write(" --remove_" + issue + " " + " ".join(map(str,channels_to_remove)))
+                bash_script.write(" --comment \'" + user_comment + "\'\n");
 
 
 #    else:
