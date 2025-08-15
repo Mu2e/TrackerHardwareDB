@@ -206,14 +206,18 @@ df['Channel'] = df[['Channel']].ffill()
 # ATD problems that map to the same issue (e.g. due to different capitalizations)
 df['QC DB Issue'] = df['Problem'].map(ATD_to_DB_issue_dict)
 
-# The disconnected_preamps is in the ATD spreadsheet as an additional YES/NO to each issue.
+# The disconnected_preamps is in the ATD spreadsheet as an additional YES/NO to each issue, or given as "Disconnected" status after CuClip installation.
 # To make this script easier, we will add in new rows to the df for disconnected_preamps
-new_df = df[(df['Preamp connected to straw?'] == "NO")]
+new_df = df[(df['Preamp connected to straw?'] == "NO") | (df['Status after CuClip Installation'] == "Disconnected")]
 #print(new_df[["Panel", "Channel", "Preamp connected to straw?"]])
-new_rows = pd.DataFrame({'QC DB Issue' : ['disconnected_preamps'] * len(new_df), 'Channel' : new_df['Channel'], 'Panel' : new_df['Panel']});
+new_rows = pd.DataFrame({'QC DB Issue' : ['disconnected_preamps'] * len(new_df), 'Channel' : new_df['Channel'], 'Panel' : new_df['Panel'], 'Problem' : ["Disconnected preamp"] * len(new_df)});
 df = pd.concat([df, new_rows], ignore_index=True)
 
-unaccounted_for_problems = df[(df['QC DB Issue'].isna()) & ((~df['Problem'].isna()) & (df['Problem'] != '-'))][['Problem', "QC DB Issue"]]
+# Some rows have a channel number but no problem specified. Set to "problem"
+df.loc[(df['Problem'].isna()), 'QC DB Issue'] = "problem"
+df.loc[(df['Problem'] == "-"), 'QC DB Issue'] = "problem"
+
+unaccounted_for_problems = df[(df['QC DB Issue'].isna())]
 if len(unaccounted_for_problems) != 0:
     print(unaccounted_for_problems.head(20))
     print("ERROR: Some problems in the ATD spreadsheet do not have a defined equivalent in the QC DB (see above for list)")
@@ -234,9 +238,13 @@ for name, group in grouped:
 
 #    print(name, group)
     channel_list = group['Channel'].tolist()
-    if ("general" in channel_list or "  " in channel_list):
-        print("ERROR: a string is in the channel colom (TODO)")
-        continue
+    for ch in channel_list:
+        try:
+            int(ch)
+        except ValueError:
+            print("WARNING: a non-numeric string is in the channel column (\""+ch+"\"). Removing...")
+            channel_list.remove(ch)
+
     atd_channels = sorted([int(ch) for ch in channel_list]) # channels with this problem in ATD spreadsheet
 #    print(atd_channels)
 
@@ -260,7 +268,7 @@ for name, group in grouped:
                 bash_script.write(" --remove_"+issue+ " " +  " ".join(map(str, channels_in_qc_db_not_in_atd)))
             if (len(channels_in_atd_not_in_qc_db) > 0):
                 bash_script.write(" --add_" + issue + " " + " ".join(map(str, channels_in_atd_not_in_qc_db)))
-            bash_script.write(" --comment \'updated from ATD spreadsheet\'\n");
+            bash_script.write(" --comment \'updated from ATD spreadsheet snapshot of " + snapshot_date + "\'\n");
         elif user_check in ['n', 'N']:
             user_input = ""
             while user_input not in ['y', 'Y', 'n', 'N']:
