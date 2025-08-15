@@ -156,6 +156,7 @@ for name, group in plane_grouped:
 #    print(qc_db_panel_ids)
     if qc_db_panel_ids != atd_panel_ids:
         print("!!! Plane "+str(plane_id) + " panel_ids are NOT the same (ATD: " + str(atd_panel_ids) + ", QC DB: " + str(qc_db_panel_ids) + ") !!!")
+        exit(1)
 #    else:
 #        print("Plane "+str(plane_id) + " panel_ids are the same (ATD: " + str(atd_panel_ids) + ", QC DB: " + str(qc_db_panel_ids) + ")")
     planes_checked.append(plane_id)
@@ -165,6 +166,7 @@ for name, group in plane_grouped:
 missing_planes = set(all_planes) - set(planes_checked)
 if (len(missing_planes)>0):
     print("!!! We are missing planes " + str(missing_planes))
+    exit(1)
 print("...Done!\n")
 
 # First get the panels with no issues and make sure that QC DB agrees
@@ -204,6 +206,13 @@ df['Channel'] = df[['Channel']].ffill()
 # ATD problems that map to the same issue (e.g. due to different capitalizations)
 df['QC DB Issue'] = df['Problem'].map(ATD_to_DB_issue_dict)
 
+# The disconnected_preamps is in the ATD spreadsheet as an additional YES/NO to each issue.
+# To make this script easier, we will add in new rows to the df for disconnected_preamps
+new_df = df[(df['Preamp connected to straw?'] == "NO")]
+#print(new_df[["Panel", "Channel", "Preamp connected to straw?"]])
+new_rows = pd.DataFrame({'QC DB Issue' : ['disconnected_preamps'] * len(new_df), 'Channel' : new_df['Channel'], 'Panel' : new_df['Panel']});
+df = pd.concat([df, new_rows], ignore_index=True)
+
 unaccounted_for_problems = df[(df['QC DB Issue'].isna()) & ((~df['Problem'].isna()) & (df['Problem'] != '-'))][['Problem', "QC DB Issue"]]
 if len(unaccounted_for_problems) != 0:
     print(unaccounted_for_problems.head(20))
@@ -219,9 +228,9 @@ for name, group in grouped:
         continue
     issue = name[1]
     # These are columns I still need to add
-    if issue in ['problem']:
-        print("TODO: Skipping issue "+issue+ " because it is not yet in QC DB")
-        continue
+#    if issue in ['problem']:
+#        print("TODO: Skipping issue "+issue+ " because it is not yet in QC DB")
+#        continue
 
 #    print(name, group)
     channel_list = group['Channel'].tolist()
