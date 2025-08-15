@@ -221,9 +221,9 @@ for name, group in grouped:
         continue
     issue = name[1]
     # These are columns I still need to add
-    if issue in ['problem']:
-        print("TODO: Skipping issue "+issue+ " because it is not yet in QC DB")
-        continue
+#    if issue in ['problem']:
+#        print("TODO: Skipping issue "+issue+ " because it is not yet in QC DB")
+#        continue
 
 #    print(name, group)
     channel_list = group['Channel'].tolist()
