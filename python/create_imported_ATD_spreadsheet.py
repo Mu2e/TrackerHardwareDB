@@ -299,7 +299,7 @@ for name, group in grouped:
                     bash_script.write(" --add_" + issue + " " + " ".join(map(str,channels_to_add)))
                 if (len(channels_to_remove)>0):
                     bash_script.write(" --remove_" + issue + " " + " ".join(map(str,channels_to_remove)))
-                bash_script.write(" --comment \'" + user_comment + "\'\n");
+                bash_script.write(" --comment \"" + user_comment + "\"\n");
 
 
 #    else:
