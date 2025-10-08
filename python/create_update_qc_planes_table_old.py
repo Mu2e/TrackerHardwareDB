@@ -42,10 +42,10 @@ outfilename = '../sql/update_qc_planes_table.sql'#_'+str(plane_id)+'.sql';
 print("Creating " + outfilename + " for plane number " + str(plane_id) + "...");
 
 opts='w'
-if args.append:
+if args.append == True:
     opts = 'a'
 
-update_sql_file = open(outfilename, 'a')
+update_sql_file = open(outfilename, opts)
 
 # first get the old values from qc.planes and create a new row in repairs.planes
 update_sql_file.write("WITH old_values AS (SELECT plane_id,panel_ids from qc.planes WHERE plane_id="+str(plane_id)+") INSERT INTO repairs.planes(plane_id, old_value) SELECT plane_id,panel_ids FROM old_values;\n"); # insert the new repair row with the old values

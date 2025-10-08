@@ -134,6 +134,7 @@ print("\nChecking that panel_ids for each plane are the same in ATD spreadsheet 
 plane_grouped  = df.groupby(['Plane'])
 all_planes = np.linspace(1,36, 36, dtype=int)
 planes_checked = []
+planes_ok = True
 for name, group in plane_grouped:
 #    print(name)
 #    print(group)
@@ -156,7 +157,7 @@ for name, group in plane_grouped:
 #    print(qc_db_panel_ids)
     if qc_db_panel_ids != atd_panel_ids:
         print("!!! Plane "+str(plane_id) + " panel_ids are NOT the same (ATD: " + str(atd_panel_ids) + ", QC DB: " + str(qc_db_panel_ids) + ") !!!")
-        exit(1)
+        planes_ok = False
 #    else:
 #        print("Plane "+str(plane_id) + " panel_ids are the same (ATD: " + str(atd_panel_ids) + ", QC DB: " + str(qc_db_panel_ids) + ")")
     planes_checked.append(plane_id)
@@ -166,8 +167,13 @@ for name, group in plane_grouped:
 missing_planes = set(all_planes) - set(planes_checked)
 if (len(missing_planes)>0):
     print("!!! We are missing planes " + str(missing_planes))
-    exit(1)
+    planes_ok = False
 print("...Done!\n")
+
+if not planes_ok:
+    print("!!! Issues with the panels in the planes. See messages above. Run script described here if needs be: https://mu2ewiki.fnal.gov/wiki/Tracker_Databases#Changing_panels_in_a_plane")
+    print("Exiting now...")
+    exit(1)
 
 # First get the panels with no issues and make sure that QC DB agrees
 print("\nChecking that panels with no issues in ATD spreadsheet also have no problems in QC database...")
